@@ -1,4 +1,4 @@
-"""Headless flow tests for The Phish Store. Run: python3 tests/flow_test.py
+"""Headless flow tests for Pond. Run: python3 tests/flow_test.py
 Needs: pip install playwright && playwright install chromium
 Uses a fake window.claude so no network or Claude account is needed.
 """

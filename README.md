@@ -1,4 +1,6 @@
-# The Phish Store
+# Pond
+
+*Cast your rod, spear your prey.*
 
 A social-engineering training range, modeled on HackTheBox but for people. You talk, persuade and pretext your way past AI-played targets instead of exploiting code.
 

@@ -1,4 +1,4 @@
-<title>The Phish Store</title>
+<title>Pond</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
 <style>
   :root{
@@ -613,7 +613,7 @@
   .stagger>*,.screen-anim{animation:none;}
   .site-logo{font-family:var(--sans);font-weight:800;letter-spacing:-.01em;font-size:15px;}
   .hero{text-align:left;padding:52px 0 30px;}
-  .hero-h1{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.04;max-width:12ch;}
+  .hero-h1{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.04;max-width:15ch;}
   .hero-sub{margin:0 0 26px;max-width:480px;font-size:16.5px;}
   .hero-cta{justify-content:flex-start;}
   .launch-btn,.again-btn{background:var(--accent);color:#16130A;border:none;border-radius:6px;font-family:var(--sans);font-weight:700;font-size:14px;letter-spacing:0;}
@@ -1066,7 +1066,7 @@ function siteChrome(active, inner){
   var navHtml=nav.map(function(n){ return '<a class="'+(active===n[0]?"here":"")+'" onclick="'+n[2]+'">'+esc(n[1])+'</a>'; }).join("");
   return '<div class="site">' +
     '<div class="site-header">' +
-      '<div class="site-logo" onclick="goHome()" style="cursor:pointer">The Phish Store</div>' +
+      '<div class="site-logo" onclick="goHome()" style="cursor:pointer">Pond</div>' +
       '<div class="site-nav">'+navHtml+'</div>' +
       '<div class="site-spacer"></div>' +
       '<div class="site-user" onclick="goProfile()" style="cursor:pointer"><span>'+esc(profileName||"operator")+'</span><div class="av">'+esc((profileName||"O").charAt(0).toUpperCase())+'</div></div>' +
@@ -1090,7 +1090,7 @@ function renderHome(){
   var inner='<div class="home-stage screen-anim">'+
     '<div class="hero">'+
       
-      '<h1 class="hero-h1">Talk your way in.</h1>'+
+      '<h1 class="hero-h1">Cast your rod, spear your prey.</h1>'+
       '<p class="hero-sub">Practice social engineering on AI-played targets. Call them, email them, or send one lure to a whole company, then see what worked.</p>'+
       '<div class="hero-cta"><button class="launch-btn hero-btn" onclick="startPlaying()">Start a mission</button>'+
         '<button class="hero-btn2" onclick="showTutorial()">How it works</button></div>'+
@@ -1130,7 +1130,7 @@ function renderProfile(){
       '<div class="mx-head"><span class="mx-label"></span><div class="mx-cells">'+DIFFICULTIES.map(function(d){return '<span class="mx-dh">'+esc(d.name.slice(0,3))+'</span>';}).join("")+'</div></div>'+
       rows+'</div>';
   }).join("");
-  var inner='<div class="site-stage screen-anim"><div class="site-crumb"><b>The Phish Store</b><span class="sep">/</span>Profile</div>'+
+  var inner='<div class="site-stage screen-anim"><div class="site-crumb"><b>Pond</b><span class="sep">/</span>Profile</div>'+
     '<div class="pf-hero">'+
       '<div class="pf-av">'+esc((profileName||"O").charAt(0).toUpperCase())+'</div>'+
       '<div class="pf-id"><h1>'+esc(profileName||"operator")+'</h1>'+
@@ -1193,7 +1193,7 @@ function renderSelect(){
   var launchLabel = modeObj.interaction==="campaign" ? "Open campaign console" : modeObj.interaction==="email" ? "Pull recon &amp; begin" : "Place the call";
 
   var html = '<div class="select-wrap ' + screenAnimClass("select") + '">' +
-    '<div class="site-crumb"><b>The Phish Store</b><span class="sep">/</span>Missions</div>' +
+    '<div class="site-crumb"><b>Pond</b><span class="sep">/</span>Missions</div>' +
     '<h2 class="home-h2" style="margin-top:0">Configure your mission</h2>' +
     '<div class="step-block"><div class="step-head"><span class="step-num">1</span><p class="section-label">Mode</p></div><div class="mode-row">' + modeHtml + '</div></div>' +
     '<div class="step-block"><div class="step-head"><span class="step-num">2</span><p class="section-label">Case file</p></div><div class="case-list">' + caseHtml + '</div></div>' +
@@ -1209,7 +1209,7 @@ function renderSelect(){
 function renderGate(isChange){
   var inner =
     '<div class="gate-wrap ' + screenAnimClass("gate" + (isChange?"-change":"")) + '">' +
-      '<div class="brand" style="justify-content:center;"><div class="brand-mark"></div><h1>' + (isChange ? "Change callsign" : "The Phish Store") + '</h1></div>' +
+      '<div class="brand" style="justify-content:center;"><div class="brand-mark"></div><h1>' + (isChange ? "Change callsign" : "Pond") + '</h1></div>' +
       '<p class="tagline" style="margin:16px auto 0;">' + (isChange ? "Pick a new callsign. Your cleared missions stay with you." : "Pick a callsign. It names you on your profile and saves your progress on this device.") + '</p>' +
       '<input class="gate-input" id="gate-input" maxlength="20" placeholder="callsign" value="' + esc(isChange && profileName ? profileName : "") + '" onkeydown="if(event.key===\'Enter\') confirmCallsign();">' +
       '<div class="gate-err" id="gate-err"></div>' +
@@ -1239,7 +1239,7 @@ async function confirmCallsign(){
 
 var obReturn = "home";
 var ONBOARDING=[
-  {ic:ico("brief"), h:"Welcome to The Phish Store", p:"A training range for social engineering. The human side of security. You won\'t write code here. You talk, persuade, and pretext your way to a hidden flag, live against an AI that plays the target and pushes back like a real person."},
+  {ic:ico("brief"), h:"Welcome to Pond", p:"A training range for social engineering. The human side of security. You won\'t write code here. You talk, persuade, and pretext your way to a hidden flag, live against an AI that plays the target and pushes back like a real person."},
   {ic:ico("phone"), h:"Three ways to play", p:"Vishing is a live phone call. Spear Phishing is a targeted email built from an OSINT dossier. Mass Phishing is a campaign. Craft one lure, blast a population, chase the highest click-rate over rounds."},
   {ic:ico("gauge"), h:"Watch your suspicion", p:"Every message moves the target\'s suspicion meter. Push too hard, contradict yourself, or force urgency and it spikes. Max it out and they walk. Stay calm, consistent, and plausible."},
   {ic:ico("flag"), h:"Capture the flag", p:"When the target reveals the code you\'ve won the intel. But above beginner tier you must recognize it and submit it yourself in the Flag tab. Knowing WHEN you have what you need is half the skill."},
@@ -1351,13 +1351,13 @@ function siteShell(crumbLabel, consoleHtml){
   }).join("");
   return '<div class="site in-mission">' +
     '<div class="site-header">' +
-      '<div class="site-logo" onclick="navAway(\'goHome\')" style="cursor:pointer">The Phish Store</div>' +
+      '<div class="site-logo" onclick="navAway(\'goHome\')" style="cursor:pointer">Pond</div>' +
       '<div class="site-nav">'+navHtml+'</div>' +
       '<div class="site-spacer"></div>' +
       '<div class="site-user" onclick="navAway(\'goProfile\')" style="cursor:pointer"><span>'+esc(profileName||"operator")+'</span><div class="av">'+esc((profileName||"O").charAt(0).toUpperCase())+'</div></div>' +
     '</div>' +
     '<div class="site-stage">' +
-      '<div class="site-crumb"><b>The Phish Store</b><span class="sep">/</span>'+esc(crumbLabel)+'</div>' +
+      '<div class="site-crumb"><b>Pond</b><span class="sep">/</span>'+esc(crumbLabel)+'</div>' +
       consoleHtml +
     '</div>' +
   '</div>';
