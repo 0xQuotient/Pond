@@ -42,11 +42,5 @@
   }
   var sample = async function (input) { await new Promise(function (r) { setTimeout(r, 350); }); return { text: pick(input), truncated: false }; };
   sample.json = async function (input) { return JSON.parse(pick(input)); };
-  var store = {};
-  try { store = JSON.parse(localStorage.getItem("phishstore:devdb") || "{}"); } catch (e) {}
-  var db = { doc: function (p) { return {
-    get: async function () { return { exists: p in store, data: function () { return store[p]; } }; },
-    set: async function (d) { store[p] = d; try { localStorage.setItem("phishstore:devdb", JSON.stringify(store)); } catch (e) {} }
-  }; } };
-  window.claude = { use: async function (n) { return n === "sample" ? sample : n === "db" ? db : null; } };
+  window.claude = { use: async function (n) { return n === "sample" ? sample : null; } };
 })();

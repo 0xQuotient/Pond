@@ -18,12 +18,11 @@ Everything is fictional: organizations, people, domains and dossiers are invente
 
 ## How it runs
 
-`index.html` is a single self-contained page written as a [Claude artifact](https://claude.ai). It relies on two things the artifact runtime provides through `window.claude`:
+`index.html` is a single self-contained page written as a [Claude artifact](https://claude.ai). It relies on one thing the artifact runtime provides through `window.claude`:
 
 - `sample`, which asks Claude to play the target, generate dossiers, simulate campaign results and write coach notes, on the viewer's own Claude account.
-- `db`, the artifact's shared database, used for leaderboards.
 
-Per-player profile and progress are stored in the browser's `localStorage`.
+There is no leaderboard and no shared backend. Per-player profile and progress are stored in the browser's `localStorage`.
 
 Outside claude.ai the AI features report "Claude isn't available in this view". To click through the whole UI locally with canned replies, build the standalone page with the dev shim:
 
@@ -36,7 +35,7 @@ Without `--mock` the page loads but has no AI backend.
 
 ## Publishing as an artifact
 
-Publish `index.html` as-is. It has no `<html>`, `<head>` or `<body>` wrapper on purpose, because the artifact host adds one. Declare the `sample` and `db` capabilities.
+Publish `index.html` as-is. It has no `<html>`, `<head>` or `<body>` wrapper on purpose, because the artifact host adds one. Declare the `sample` capability only.
 
 ## Tests
 

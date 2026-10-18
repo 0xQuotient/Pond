@@ -673,29 +673,17 @@ var ICON_P={
 function ico(n){return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICON_P[n]||"")+'</svg>';}
 "use strict";
 
-/* ---- storage: shared rows -> artifact db, per-viewer -> localStorage ---- */
+/* ---- storage: per-viewer progress lives in localStorage ---- */
 function sid(key){ return String(key).replace(/[^A-Za-z0-9_\-.~:@+]/g,"_"); }
 async function useCap(name){
   try{ return (window.claude && window.claude.use) ? await window.claude.use(name) : null; }catch(e){ return null; }
 }
 window.storage = {
   get: async function(key, shared){
-    if(shared){
-      var db = await useCap("db");
-      if(!db) throw new Error("db unavailable");
-      var snap = await db.doc("boards/" + sid(key)).get();
-      return snap.exists ? {value: snap.data().v} : null;
-    }
     try{ var v = localStorage.getItem("phishstore:" + key); return v==null ? null : {value:v}; }
     catch(e){ return null; }
   },
   set: async function(key, value, shared){
-    if(shared){
-      var db = await useCap("db");
-      if(!db) throw new Error("db unavailable");
-      await db.doc("boards/" + sid(key)).set({v:value});
-      return {key:key};
-    }
     try{ localStorage.setItem("phishstore:" + key, value); }catch(e){}
     return {key:key};
   }
@@ -831,7 +819,6 @@ var root = document.getElementById("root");
 var ui = {screen:"select", selMode:"vishing", selCaseId:VISHING_CASES[0].id, selDiffId:"medium"};
 var call = null;
 var lastResult = null;
-var lb = {modeId:"vishing", caseId:VISHING_CASES[0].id, diffId:"medium"};
 var completionsCache = {};
 var pendingLaunch = null;
 var lastScreenKey = null;
@@ -877,30 +864,6 @@ function computeScore(won, timeLeft, suspicion, diffId){
 
 /* ---- persistent storage ---- */
 
-async function getBoard(modeId, caseId, diffId){
-  try{
-    var r = await window.storage.get("board:"+modeId+":"+caseId+":"+diffId, true);
-    return r ? JSON.parse(r.value) : [];
-  }catch(e){ return []; }
-}
-async function pushToBoard(modeId, caseId, diffId, entry){
-  try{
-    var board = await getBoard(modeId, caseId, diffId);
-    var existing = -1;
-    for(var i=0;i<board.length;i++){
-      if(board[i].name && board[i].name.toLowerCase() === entry.name.toLowerCase()){ existing = i; break; }
-    }
-    if(existing >= 0){
-      if(board[existing].score >= entry.score) return true;
-      board.splice(existing,1);
-    }
-    board.push(entry);
-    board.sort(function(a,b){ return b.score-a.score; });
-    var trimmed = board.slice(0,10);
-    await window.storage.set("board:"+modeId+":"+caseId+":"+diffId, JSON.stringify(trimmed), true);
-    return true;
-  }catch(e){ return false; }
-}
 function maxPossibleScore(diffId){
   var d = DIFFICULTIES.find(function(x){ return x.id===diffId; });
   if(!d) return 999999;
@@ -1099,7 +1062,7 @@ function goHome(){ ui.screen="home"; renderHome(); }
 function goProfile(){ ui.screen="profile"; renderProfile(); }
 
 function siteChrome(active, inner){
-  var nav=[["home","Home","goHome()"],["missions","Missions","startPlaying()"],["profile","Profile","goProfile()"],["leaderboard","Leaderboard","showLeaderboard()"],["help","How to play","showTutorial()"]];
+  var nav=[["home","Home","goHome()"],["missions","Missions","startPlaying()"],["profile","Profile","goProfile()"],["help","How to play","showTutorial()"]];
   var navHtml=nav.map(function(n){ return '<a class="'+(active===n[0]?"here":"")+'" onclick="'+n[2]+'">'+esc(n[1])+'</a>'; }).join("");
   return '<div class="site">' +
     '<div class="site-header">' +
@@ -1247,7 +1210,7 @@ function renderGate(isChange){
   var inner =
     '<div class="gate-wrap ' + screenAnimClass("gate" + (isChange?"-change":"")) + '">' +
       '<div class="brand" style="justify-content:center;"><div class="brand-mark"></div><h1>' + (isChange ? "Change callsign" : "The Phish Store") + '</h1></div>' +
-      '<p class="tagline" style="margin:16px auto 0;">' + (isChange ? "Pick a new callsign. Your cleared missions stay with you." : "Pick a callsign. It tags your leaderboard runs and saves your progress on this device.") + '</p>' +
+      '<p class="tagline" style="margin:16px auto 0;">' + (isChange ? "Pick a new callsign. Your cleared missions stay with you." : "Pick a callsign. It names you on your profile and saves your progress on this device.") + '</p>' +
       '<input class="gate-input" id="gate-input" maxlength="20" placeholder="callsign" value="' + esc(isChange && profileName ? profileName : "") + '" onkeydown="if(event.key===\'Enter\') confirmCallsign();">' +
       '<div class="gate-err" id="gate-err"></div>' +
       '<button class="launch-btn" onclick="confirmCallsign()">' + (isChange ? "Save" : "Enter the range") + '</button>' +
@@ -1286,7 +1249,7 @@ var ONBOARDING=[
     '<div class="tut-tip"><b>Answer their questions.</b> If the target pushes back to verify you, answering well matters more than being smooth.</div>'+
     '<div class="tut-tip"><b>Boring beats aggressive.</b> Calm, plausible, mundane framing consistently outperforms a hard sell.</div>'},
   {ic:ico("target"), h:"Difficulty tiers", htmlFn:"obDiffHtml", p:"Recruit is a gentle tutorial. Forgiving targets, lots of time. Each tier above climbs sharply. Impossible splits into two linked contacts: soften a recon source first, then use that leverage on the real target."},
-  {ic:ico("results"), h:"Scoring & ranks", htmlFn:"obScoreHtml", p:"Fast, low-suspicion clears at high difficulty top the leaderboard. Clear missions to climb from Script Kiddie to Mastermind at 100%."}
+  {ic:ico("results"), h:"Scoring & ranks", htmlFn:"obScoreHtml", p:"Fast, low-suspicion clears at high difficulty score highest. Clear missions to climb from Script Kiddie to Mastermind at 100%."}
 ];
 function obDiffHtml(){
   return '<div class="objective-box" style="text-align:left">'+DIFFICULTIES.map(function(d){
@@ -1382,7 +1345,7 @@ function confirmEnd(){
   confirmTwice("end", "Click End again to abandon this mission.", hangupCall);
 }
 function siteShell(crumbLabel, consoleHtml){
-  var nav = [["goHome","Home"],["startPlaying","Missions"],["goProfile","Profile"],["showLeaderboard","Leaderboard"],["showTutorial","How to play"]];
+  var nav = [["goHome","Home"],["startPlaying","Missions"],["goProfile","Profile"],["showTutorial","How to play"]];
   var navHtml = nav.map(function(n){
     return '<a class="'+(n[0]==="startPlaying"?"here":"")+'" onclick="navAway(\''+n[0]+'\')">'+esc(n[1])+'</a>';
   }).join("");
@@ -1720,7 +1683,6 @@ function endCampaign(){
 
 function renderCampaignEnd(){
   var r=lastResult;
-  var submitHtml = r.won ? '<div class="submit-row"><button id="lb-submit-btn" onclick="submitCampaignScore('+r.campaignScore+')">Submit as '+esc(profileName||"operator")+'</button></div>' : "";
   root.innerHTML = siteChrome("missions",
     '<div class="end-wrap '+screenAnimClass("end")+'">'+
       '<div class="end-status '+(r.won?"win":"lose")+'">'+(r.won?(r.assisted?"Campaign cleared · ASSISTED":"Campaign cleared"):"Campaign fell short")+'</div>'+
@@ -1733,21 +1695,9 @@ function renderCampaignEnd(){
         '<div><span class="mono">'+campaign.round+'</span><small>rounds used</small></div>'+
         '<div><span class="mono">'+esc(r.diff.name)+'</span><small>difficulty</small></div>'+
       '</div>'+
-      '<div id="submit-area">'+submitHtml+'</div>'+
       endActionsHtml()+
     '</div>');
   animateCountUp(document.getElementById("score-big-val"), r.campaignScore||0, 700);
-}
-
-async function submitCampaignScore(score){
-  if(!profileName) return;
-  var btn=document.getElementById("lb-submit-btn");
-  if(btn){ btn.disabled=true; btn.textContent="Submitting…"; }
-  var ok=await pushToBoard(lastResult.mode.id, lastResult.caseObj.id, lastResult.diff.id, {name:profileName, score:score, assisted:!!lastResult.assisted});
-  var area=document.getElementById("submit-area");
-  if(!area) return;
-  area.innerHTML = ok ? '<div class="submitted-note">&#10003; logged to '+esc(lastResult.caseObj.id)+' / '+esc(lastResult.diff.name)+' board</div>'
-    : '<div class="gate-err" style="margin-bottom:22px;">Couldn\'t reach the leaderboard. Score stands but wasn\'t saved.</div>';
 }
 
 /* ==================== BRIEFING (OSINT dossier) ==================== */
@@ -2417,7 +2367,6 @@ function endActionsHtml(){
     '<button class="again-btn" onclick="retryMission()">Retry this case</button>' +
     '<button class="again-btn ghost" onclick="changeDifficulty()">Change difficulty</button>' +
     '<button class="again-btn ghost" onclick="startPlaying()">New mission</button>' +
-    '<button class="again-btn ghost" onclick="lbForLast()">Leaderboard</button>' +
   '</div>';
 }
 
@@ -2425,14 +2374,6 @@ function renderEnd(){
   var r = lastResult;
   var usedSeconds = Math.max(0, r.diff.seconds - r.timeLeft);
   var score = computeScore(r.won, r.timeLeft, r.suspicion, r.diff.id);
-
-  var submitHtml = "";
-  if(r.won){
-    submitHtml =
-      '<div class="submit-row">' +
-        '<button id="lb-submit-btn" onclick="submitScore(' + score + ')">Submit as ' + esc(profileName||"operator") + '</button>' +
-      '</div>';
-  }
 
   root.innerHTML = siteChrome("missions",
     '<div class="end-wrap ' + screenAnimClass("end") + '">' +
@@ -2447,71 +2388,10 @@ function renderEnd(){
         '<div><span class="mono">' + r.suspicion + '</span><small>final suspicion</small></div>' +
         '<div><span class="mono">' + esc(r.diff.name) + '</span><small>difficulty</small></div>' +
       '</div>' +
-      '<div id="submit-area">' + submitHtml + '</div>' +
       endActionsHtml() +
       debriefHtml(r) +
     '</div>');
   animateCountUp(document.getElementById("score-big-val"), score, 700);
-}
-
-async function submitScore(score){
-  if(!profileName) return;
-  var btn = document.getElementById("lb-submit-btn");
-  if(btn){ btn.disabled = true; btn.textContent = "Submitting…"; }
-  var ok = await pushToBoard(lastResult.mode.id, lastResult.caseObj.id, lastResult.diff.id, {name:profileName, score:score, assisted:!!lastResult.assisted});
-  var area = document.getElementById("submit-area");
-  if(!area) return;
-  if(ok){
-    area.innerHTML = '<div class="submitted-note">&#10003; logged to ' + esc(lastResult.caseObj.id) + ' / ' + esc(lastResult.diff.name) + ' board</div>';
-  } else {
-    area.innerHTML = '<div class="gate-err" style="margin-bottom:22px;">Couldn\'t reach the leaderboard. Your score stands, but it wasn\'t saved.</div>';
-  }
-}
-
-/* ==================== LEADERBOARD ==================== */
-
-function showLeaderboard(){ ui.screen = "leaderboard"; renderLeaderboard(); }
-function lbForLast(){ if(lastResult){ lb.modeId = lastResult.mode.id; lb.caseId = lastResult.caseObj.id; lb.diffId = lastResult.diff.id; } showLeaderboard(); }
-function lbSelectMode(id){ lb.modeId = id; lb.caseId = CASES_BY_MODE[id][0].id; renderLeaderboard(); }
-function lbSelectCase(id){ lb.caseId = id; renderLeaderboard(); }
-function lbSelectDiff(id){ lb.diffId = id; renderLeaderboard(); }
-
-function renderLeaderboard(){
-  var modeChips = MODES.map(function(m){
-    return '<div class="lb-chip ' + (lb.modeId===m.id?"active":"") + '" onclick="lbSelectMode(\'' + m.id + '\')">' + esc(m.name) + '</div>';
-  }).join("");
-  var casesForMode = CASES_BY_MODE[lb.modeId];
-  var caseChips = casesForMode.map(function(c){
-    return '<div class="lb-chip ' + (lb.caseId===c.id?"active":"") + '" onclick="lbSelectCase(\'' + c.id + '\')">' + esc(c.name) + '</div>';
-  }).join("");
-  var diffChips = DIFFICULTIES.map(function(d){
-    return '<div class="lb-chip ' + (lb.diffId===d.id?"active":"") + '" onclick="lbSelectDiff(\'' + d.id + '\')">' + esc(d.name) + '</div>';
-  }).join("");
-
-  root.innerHTML = siteChrome("leaderboard",
-    '<div class="lb-wrap ' + screenAnimClass("leaderboard") + '">' +
-      '<div class="brand"><div class="brand-mark"></div><h1>Leaderboards</h1></div>' +
-      '<p class="tagline" style="margin-bottom:24px;">Top scores per mode, case file, and difficulty.</p>' +
-      '<p class="section-label">Mode</p><div class="lb-select-row">' + modeChips + '</div>' +
-      '<p class="section-label">Case file</p><div class="lb-select-row">' + caseChips + '</div>' +
-      '<p class="section-label">Difficulty</p><div class="lb-select-row">' + diffChips + '</div>' +
-      '<div class="lb-table" id="lb-table"><div class="lb-empty">loading…</div></div>' +
-    '</div>');
-  loadBoard();
-}
-
-async function loadBoard(){
-  var board = await getBoard(lb.modeId, lb.caseId, lb.diffId);
-  var table = document.getElementById("lb-table");
-  if(!table) return;
-  if(board.length===0){
-    table.innerHTML = '<div class="lb-empty">No clears logged yet for this combo. Be first.</div>';
-    return;
-  }
-  table.innerHTML = board.map(function(e,i){
-    var mine = profileName && e.name && e.name.toLowerCase()===profileName.toLowerCase();
-    return '<div class="lb-row' + (mine?" you-row":"") + '"><div class="lb-rank">#' + (i+1) + '</div><div class="lb-name">' + esc(e.name) + (mine?" <span class=\"case-cleared\">you</span>":"") + (e.assisted?" <span class=\"lb-assist\" title=\"assisted clear\">&#9873;</span>":"") + '</div><div class="lb-score">' + e.score + '</div></div>';
-  }).join("");
 }
 
 /* ==================== TUTORIAL ==================== */

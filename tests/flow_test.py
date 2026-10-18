@@ -8,13 +8,12 @@ import pathlib
 F=str(pathlib.Path(__file__).resolve().parent.parent/"index.html")
 SHOTS=pathlib.Path(__file__).resolve().parent/"shots"; SHOTS.mkdir(exist_ok=True)
 MOCK="""
-window.__fail=false; window.__db={};
+window.__fail=false;
 const reply=()=>JSON.stringify({reply:'Hi, this is Dana. Who is this?',suspicion_delta:3,hangup:false,flag_leaked:false});
 const sample=async(input,opts)=>{ if(window.__fail) throw {code:'upstream_error',message:'x'}; return {text:reply(),truncated:false}; };
 sample.json=async(input,opts)=>{ if(window.__fail) throw {code:'upstream_error',message:'x'};
   return {click_rate:34,report_rate:12,segments:[{name:'Call center',clicked:50,note:'busy'}],weakest_segment:'IT',dominant_lever:'urgency',analyst_note:'ok'}; };
-const db={doc:(p)=>({get:async()=>({exists:p in window.__db,data:()=>window.__db[p]}),set:async(d)=>{window.__db[p]=d;}})};
-window.claude={use:async(n)=>n==='sample'?sample:n==='db'?db:null};
+window.claude={use:async(n)=>n==='sample'?sample:null};
 """
 ok=True
 def check(name,cond,extra=""):
