@@ -1,6 +1,6 @@
 # Pond
 
-*Cast your rod, spear your prey.*
+Hands-on social engineering labs, in the spirit of Hack The Box.
 
 A social-engineering training range, modeled on HackTheBox but for people. You talk, persuade and pretext your way past AI-played targets instead of exploiting code.
 
