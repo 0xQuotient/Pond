@@ -43,6 +43,10 @@ async def run(b,tag,w,h):
     check(tag+" call screen", await ev("ui.screen")=="call")
     s0=await ev("call.seconds"); await ev("call.loading=true"); await pg.wait_for_timeout(2200); s1=await ev("call.seconds"); await ev("call.loading=false")
     check(tag+" timer paused while loading", s0==s1,(s0,s1))
+    check(tag+" operator: clock yes, meter no, log tab no", await pg.locator("#timer-val").count()==1 and await pg.locator("#gauge-fill").count()==0 and await pg.locator(".os-dock >> text=Log").count()==0)
+    for d,exp in (("easy",(1,1,1)),("hard",(0,0,0)),("impossible",(0,0,0))):
+        got=await ev("(function(){var a=DIFFICULTIES.filter(function(x){return x.id==='%s'})[0].aids;return [a.meter,a.clock,a.trail]})()"%d)
+        check(tag+" aids "+d, tuple(got)==exp, got)
     # 3 hints failure not counted; success counted
     await ev("window.__fail=true"); await ev("setTool('hints')"); await ev("requestHint()"); await pg.wait_for_timeout(600)
     check(tag+" failed hint not counted", await ev("call.assisted")==False and await ev("call.hints.length")==0)

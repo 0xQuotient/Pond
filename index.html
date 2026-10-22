@@ -914,15 +914,20 @@ var TARGET_CARDS = {
 
 var DIFFICULTIES = [
   {id:"easy", name:"Recruit", seconds:600, reconSeconds:0, sensitivity:0.35, cap:100, dots:1, startSusp:8, forgiving:true,
-   meta:["Trust: high","Verify checks: none","Patience: high"]},
+   aids:{meter:1,clock:1,trail:1,stats:1},
+   meta:["Trust: high","Verify checks: none","Patience: high","Guides: suspicion meter, clock, trail"]},
   {id:"medium", name:"Operator", seconds:360, reconSeconds:0, sensitivity:0.8, cap:100, dots:2, startSusp:15,
-   meta:["Trust: moderate","Verify checks: light","Patience: moderate"]},
+   aids:{meter:0,clock:1,trail:0,stats:1},
+   meta:["Trust: moderate","Verify checks: light","Patience: moderate","Guides: clock only"]},
   {id:"hard", name:"Handler", seconds:210, reconSeconds:0, sensitivity:1.5, cap:100, dots:3, startSusp:22,
-   meta:["Trust: low","Verify checks: active","Patience: short"]},
+   aids:{meter:0,clock:0,trail:0,stats:0},
+   meta:["Trust: low","Verify checks: active","Patience: short","Guides: none, read the room"]},
   {id:"insane", name:"Ghost", seconds:140, reconSeconds:0, sensitivity:2.4, cap:100, dots:4, startSusp:30,
-   meta:["Trust: near-zero","Verify checks: strict","Patience: none"]},
+   aids:{meter:0,clock:0,trail:0,stats:0},
+   meta:["Trust: near-zero","Verify checks: strict","Patience: none","Guides: none, read the room"]},
   {id:"impossible", name:"Impossible", seconds:150, reconSeconds:110, sensitivity:3.0, cap:100, dots:5, startSusp:35,
-   meta:["Trust: adversarial","Verify checks: cross-referenced","Structure: 2 linked contacts"]}
+   aids:{meter:0,clock:0,trail:0,stats:0},
+   meta:["Trust: adversarial","Verify checks: cross-referenced","Structure: 2 linked contacts","Guides: none, read the room"]}
 ];
 
 var DIFF_MULT = {easy:1, medium:1.5, hard:2, insane:3, impossible:5};
@@ -968,7 +973,7 @@ function esc(s){
 }
 function pad2(n){ return String(n).padStart(2,"0"); }
 function fmtTime(total){ return pad2(Math.floor(total/60)) + ":" + pad2(total%60); }
-function diffTimeLine(d){ return d.reconSeconds>0 ? ("recon "+fmtTime(d.reconSeconds)+" + main "+fmtTime(d.seconds)) : fmtTime(d.seconds); }
+function diffTimeLine(d){ if(d.aids && !d.aids.clock) return "hidden"; return d.reconSeconds>0 ? ("recon "+fmtTime(d.reconSeconds)+" + main "+fmtTime(d.seconds)) : fmtTime(d.seconds); }
 
 function computeScore(won, timeLeft, suspicion, diffId){
   if(!won) return 0;
@@ -1355,7 +1360,7 @@ var obReturn = "home";
 var ONBOARDING=[
   {ic:ico("brief"), h:"Welcome to Pond", p:"A training range for social engineering. The human side of security. You won\'t write code here. You talk, persuade, and pretext your way to a hidden flag, live against an AI that plays the target and pushes back like a real person."},
   {ic:ico("phone"), h:"Three ways to play", p:"Vishing is a live phone call. Spear Phishing is a targeted email built from an OSINT dossier. Mass Phishing is a campaign. Craft one lure, blast a population, chase the highest click-rate over rounds."},
-  {ic:ico("gauge"), h:"Watch your suspicion", p:"Every message moves the target\'s suspicion meter. Push too hard, contradict yourself, or force urgency and it spikes. Max it out and they walk. Stay calm, consistent, and plausible."},
+  {ic:ico("gauge"), h:"Training wheels come off", p:"Every message moves the target\'s suspicion. On Recruit you get a live meter, a clock and a trail of what spiked it. Operator keeps only the clock. From Handler up you get nothing: no meter, no timer. Read their tone, because the call just ends when they have had enough."},
   {ic:ico("flag"), h:"Capture the flag", p:"When the target reveals the code you\'ve won the intel. But above beginner tier you must recognize it and submit it yourself in the Flag tab. Knowing WHEN you have what you need is half the skill."},
   {ic:ico("notes"), h:"What moves the needle", html:
     '<div class="tut-tip"><b>Stay consistent.</b> Contradicting a detail you gave two minutes ago is the fastest way to spike suspicion.</div>'+
@@ -1562,8 +1567,8 @@ function renderCampaignShell(){
         vmChip() +
         '<div class="os-title"><b>' + esc(c.org) + '</b> — ' + esc(c.id) + ' · mass phishing</div>' +
         '<div class="os-spacer"></div>' +
-        '<div class="os-stat"><span class="lbl">Best CTR</span><span class="os-timer mono" id="camp-best">' + campaign.bestClick + '%</span></div>' +
-        '<div class="os-stat"><span class="lbl">Round</span><span class="mono" id="camp-round">' + campaign.round + '/' + campaign.params.rounds + '</span></div>' +
+        (campaign.diff.aids.stats ? '<div class="os-stat"><span class="lbl">Best CTR</span><span class="os-timer mono" id="camp-best">' + campaign.bestClick + '%</span></div>' +
+        '<div class="os-stat"><span class="lbl">Round</span><span class="mono" id="camp-round">' + campaign.round + '/' + campaign.params.rounds + '</span></div>' : '') +
       '</div>' +
       '<div class="os-body">' +
         '<div class="os-dock">' + dockHtml +
@@ -1630,11 +1635,11 @@ function renderCampTool(){
       '<div class="wk-grid">'+
         '<div class="wk-card"><h4>Objective</h4><p>Maximize click-through across the population. You get up to <b>'+campaign.params.rounds+' rounds</b> to refine — your single best round is your score. Target to clear: <b>'+campaign.params.target+'% CTR</b>.</p></div>'+
         '<div class="wk-card"><h4>Scenario</h4><p>'+esc(c.blurb)+'</p></div>'+
-        '<div class="wk-stat-row">'+
+        (campaign.diff.aids.stats ? '<div class="wk-stat-row">'+
           '<div class="wk-stat"><span class="v mono">'+campaign.bestClick+'%</span><span class="k">best CTR</span></div>'+
           '<div class="wk-stat"><span class="v mono">'+campaign.round+'/'+campaign.params.rounds+'</span><span class="k">rounds used</span></div>'+
           '<div class="wk-stat"><span class="v mono">'+campaign.params.target+'%</span><span class="k">target</span></div>'+
-        '</div>'+
+        '</div>' : '')+
         '<div class="wk-card" style="grid-column:1/-1"><h4>Build order</h4><div class="build-list">'+
           buildRow("infra","Domain &amp; relay", (campaign.infra.brand||"").trim()?campDomain():"Not set up", !!(campaign.infra.brand||"").trim())+
           buildRow("target","Targets", campaign.targetSeg, true)+
@@ -1943,9 +1948,9 @@ function renderCallShell(){
 
   var tools = [
     {id:"objective", ic:ico("brief"), label:"Brief"},
-    {id:"log",       ic:ico("log"), label:"Log"},
     {id:"notes",     ic:ico("notes"), label:"Notes"}
   ];
+  if(call.diff.aids.trail) tools.splice(1,0,{id:"log", ic:ico("log"), label:"Log"});
   if(call.dossier) tools.splice(1,0,{id:"dossier", ic:ico("osint"), label:"OSINT"});
   if(!call.diff.forgiving) tools.push({id:"flag", ic:ico("flag"), label:"Flag"});
   tools.push({id:"hints", ic:ico("bulb"), label:"Hints"});
@@ -1961,8 +1966,8 @@ function renderCallShell(){
         vmChip() +
         '<div class="os-title"><b>' + esc(headerName) + '</b> — ' + esc(call.caseObj.id) + ' · ' + esc(call.mode.name.toLowerCase()) + esc(stageBadge) + '</div>' +
         '<div class="os-spacer"></div>' +
-        '<div class="os-stat"><span class="lbl">Susp</span><div class="os-gauge"><div class="os-gauge-fill" id="gauge-fill" style="width:' + call.suspicion + '%"></div></div><span id="gauge-num">' + call.suspicion + '</span></div>' +
-        '<div class="os-stat"><span class="lbl">Time</span><span class="os-timer mono" id="timer-val">' + fmtTime(call.seconds) + '</span></div>' +
+        (call.diff.aids.meter ? '<div class="os-stat"><span class="lbl">Susp</span><div class="os-gauge"><div class="os-gauge-fill" id="gauge-fill" style="width:' + call.suspicion + '%"></div></div><span id="gauge-num">' + call.suspicion + '</span></div>' : '') +
+        (call.diff.aids.clock ? '<div class="os-stat"><span class="lbl">Time</span><span class="os-timer mono" id="timer-val">' + fmtTime(call.seconds) + '</span></div>' : '') +
       '</div>' +
       '<div class="os-body">' +
         '<div class="os-dock">' + dockHtml +
