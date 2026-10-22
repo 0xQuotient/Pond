@@ -761,6 +761,8 @@
     .bl-row{grid-template-columns:1fr auto;}
     .bl-val{grid-column:1/-1;order:3;}
   }
+
+  .gear{display:inline-block;margin-left:10px;padding:1px 8px;border:1px solid var(--accent);border-radius:999px;color:var(--accent);font-family:var(--mono);font-size:10.5px;font-weight:600;vertical-align:middle;}
 </style>
 <div id="root"></div>
 <script>
@@ -804,9 +806,9 @@ window.storage = {
 /* ==================== DATA ==================== */
 
 var MODES = [
-  {id:"vishing", name:"Vishing", tag:"Live simulated phone call", interaction:"call"},
-  {id:"phishing", name:"Spear Phishing", tag:"Targeted email, built from a live OSINT dossier", interaction:"email"},
-  {id:"mass", name:"Mass Phishing", tag:"Craft one lure, blast a population, chase the highest click-rate", interaction:"campaign"}
+  {id:"vishing", name:"Vishing", gear:"Lure", tag:"Live simulated phone call", interaction:"call"},
+  {id:"phishing", name:"Spear Phishing", gear:"Spear", tag:"Targeted email, built from a live OSINT dossier", interaction:"email"},
+  {id:"mass", name:"Mass Phishing", gear:"Net", tag:"Craft one lure, blast a population, chase the highest click-rate", interaction:"campaign"}
 ];
 
 var VISHING_CASES = [
@@ -1036,13 +1038,13 @@ function clearedInMode(modeId){
   return {done:n, total:tot};
 }
 var RANKS=[
-  {min:0,  name:"Script Kiddie", tag:"just getting started"},
-  {min:3,  name:"Recruit",       tag:"learning the ropes"},
-  {min:8,  name:"Operator",      tag:"landing consistent clears"},
-  {min:16, name:"Specialist",    tag:"multi-mode competence"},
-  {min:26, name:"Handler",       tag:"working the hard tiers"},
-  {min:38, name:"Ghost",         tag:"near-total mastery"},
-  {min:55, name:"Mastermind",    tag:"100%, every box owned"}
+  {min:0,  name:"Chum",        tag:"mostly feeding the fish"},
+  {min:3,  name:"Bobber",      tag:"something finally nibbled"},
+  {min:8,  name:"Reel Deal",   tag:"landing consistent catches"},
+  {min:16, name:"Net Worth",   tag:"catching in every mode"},
+  {min:26, name:"Skipper",     tag:"working the hard waters"},
+  {min:38, name:"Kraken",      tag:"the lake is yours"},
+  {min:55, name:"Anglerfish",  tag:"100%, every catch landed"}
 ];
 function currentRank(){
   var c=clearedCount(), r=RANKS[0];
@@ -1194,7 +1196,7 @@ function renderHome(){
     var icon = ico(m.id==="vishing"?"phone":m.id==="phishing"?"mail":"mass");
     return '<div class="home-mode" onclick="jumpMode(\''+m.id+'\')">'+
       '<div class="hm-ic">'+icon+'</div>'+
-      '<div class="hm-body"><h3>'+esc(m.name)+'</h3><p>'+esc(m.tag)+'</p>'+
+      '<div class="hm-body"><h3>'+esc(m.name)+'<span class="gear">'+esc(m.gear||"")+'</span></h3><p>'+esc(m.tag)+'</p>'+
       '<div class="hm-bar"><div class="hm-fill" style="width:'+(st.done/st.total*100)+'%"></div></div>'+
       '<span class="hm-stat">'+st.done+'/'+st.total+' cleared</span></div>'+
       '<div class="hm-go">\u2192</div></div>';
@@ -1277,7 +1279,7 @@ function renderSelect(){
   var modeHtml = MODES.map(function(m){
     var st = clearedInMode(m.id);
     return '<div class="mode-btn ' + (ui.selMode===m.id?"active":"") + '" role="button" tabindex="0" aria-pressed="' + (ui.selMode===m.id) + '" onclick="selMode(\'' + m.id + '\')" onkeydown="onKeyPick(event,function(){selMode(\'' + m.id + '\')})">' +
-      '<strong>' + esc(m.name) + '</strong><small>' + esc(m.tag) + '</small>' +
+      '<strong>' + esc(m.name) + '<span class="gear">' + esc(m.gear||"") + '</span></strong><small>' + esc(m.tag) + '</small>' +
       '<span class="mode-prog mono">' + st.done + '/' + st.total + ' cleared</span></div>';
   }).join("");
 
@@ -1361,7 +1363,7 @@ var ONBOARDING=[
     '<div class="tut-tip"><b>Answer their questions.</b> If the target pushes back to verify you, answering well matters more than being smooth.</div>'+
     '<div class="tut-tip"><b>Boring beats aggressive.</b> Calm, plausible, mundane framing consistently outperforms a hard sell.</div>'},
   {ic:ico("target"), h:"Difficulty tiers", htmlFn:"obDiffHtml", p:"Recruit is a gentle tutorial. Forgiving targets, lots of time. Each tier above climbs sharply. Impossible splits into two linked contacts: soften a recon source first, then use that leverage on the real target."},
-  {ic:ico("results"), h:"Scoring & ranks", htmlFn:"obScoreHtml", p:"Fast, low-suspicion clears at high difficulty score highest. Clear missions to climb from Script Kiddie to Mastermind at 100%."}
+  {ic:ico("results"), h:"Scoring & ranks", htmlFn:"obScoreHtml", p:"Fast, low-suspicion clears at high difficulty score highest. Clear missions to climb from Chum to Anglerfish at 100%."}
 ];
 function obDiffHtml(){
   return '<div class="objective-box" style="text-align:left">'+DIFFICULTIES.map(function(d){
