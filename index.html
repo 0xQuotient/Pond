@@ -686,6 +686,81 @@
   .diff-card:nth-child(3) .diff-name{color:#F0731F;}
   .diff-card:nth-child(4) .diff-name{color:#E2492B;}
   .diff-card:nth-child(5) .diff-name{color:#F2E6CF;}
+
+  /* ======== Pond VM: a little workstation. Tab strip, titlebar, status bar ======== */
+  .os-wrap{border-radius:8px;border:1px solid #3A2B1D;background:#0A0705;}
+  .os-bar{background:#1B130D;border-radius:7px 7px 0 0;border-bottom:1px solid #2E2218;}
+  .vm-chip{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;font-weight:700;color:#EFE6D4;flex-shrink:0;}
+  .vm-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;}
+  .os-status .vm-dot{margin-right:6px;}
+  .os-body{flex-direction:column;}
+  .os-split{flex:1;display:flex;min-height:0;min-width:0;}
+  .os-dock{width:100%;height:38px;flex-direction:row;align-items:stretch;background:#0F0B08;border-right:none;border-bottom:1px solid #2E2218;overflow-x:auto;padding:0;flex-shrink:0;}
+  .dock-title{display:none;}
+  .dock-btn{width:auto;height:38px;min-width:0;flex-direction:row;gap:7px;padding:0 16px;border:none;border-right:1px solid #2E2218;border-top:2px solid transparent;border-bottom:0;border-left:0;font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:0;color:#9C8768;white-space:nowrap;flex-shrink:0;}
+  .dock-btn .ic{display:flex;margin:0;}
+  .dock-btn .ic svg{width:15px;height:15px;}
+  .dock-btn:hover{background:#17100B;color:#E4D8C2;}
+  .dock-btn.active{background:#1B130D;color:#F6EEDD;border-top-color:var(--k-accent);border-left:0;border-bottom:0;}
+  .dock-btn.active .ic{filter:none;color:var(--k-accent);}
+  .dock-btn.done::after{content:"\2713";color:var(--green);font-size:11px;}
+  .dock-sp{flex:1;display:block;border:none;}
+  .dock-btn.danger{border-right:none;border-left:1px solid #2E2218;color:#C46A55;}
+  .dock-btn.danger:hover{background:#2A1208;color:#FF7A5C;border-top-color:#E2492B;}
+  .os-panel{background:#120D09;border-right:1px solid #2E2218;}
+  .panel-head{background:#17100B;border-bottom:1px solid #2E2218;font-family:var(--sans);font-size:12px;color:#E4D8C2;}
+  .panel-head:before{display:none;}
+  .app-head{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;background:#17100B;border-bottom:1px solid #2E2218;font-size:12px;font-weight:700;color:#E4D8C2;flex-shrink:0;}
+  .app-head svg{width:15px;height:15px;color:var(--k-accent);flex-shrink:0;}
+  .app-head .sub{color:#8B7456;font-weight:500;font-family:var(--mono);font-size:11px;margin-left:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .os-main .msg.me{background:#2B1A0C;color:#FFD9B8;border:1px solid #5A2A0A;}
+  .os-main .composer{background:#0F0B08;border-top:1px solid #2E2218;}
+  .os-work{min-height:0;background:#0E0A07;}
+  .os-status{display:flex;align-items:center;gap:18px;height:26px;padding:0 12px;background:#0F0B08;border-top:1px solid #2E2218;font-family:var(--mono);font-size:10.5px;color:#8B7456;flex-shrink:0;border-radius:0 0 7px 7px;}
+  .os-status .sp{flex:1;}
+  /* domain & relay reads as a terminal */
+  .term{max-width:660px;background:#0A0705;border:1px solid #2E2218;border-radius:6px;font-family:var(--mono);font-size:12.5px;overflow:hidden;}
+  .term-bar{padding:7px 14px;background:#17100B;border-bottom:1px solid #2E2218;color:#8B7456;font-size:11px;}
+  .term-body{padding:16px;display:flex;flex-direction:column;gap:10px;}
+  .term-cmd{color:#E4D8C2;margin-top:4px;}
+  .term-cmd i{color:var(--k-accent);font-style:normal;margin-right:8px;}
+  .term-row{display:grid;grid-template-columns:110px minmax(0,1fr);align-items:center;gap:10px;padding-left:16px;}
+  .term-row label{color:#9C8768;}
+  .term-row .wk-input{padding:8px 10px;font-size:12.5px;border-radius:4px;}
+  .term-out{padding-left:16px;color:#C5B496;display:flex;flex-direction:column;gap:3px;}
+  .tl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;}
+  .tl span{color:#7A6244;}
+  .tl b{font-weight:500;color:#EFE6D4;overflow-wrap:anywhere;}
+  /* email template reads as a mail client */
+  .mail{max-width:720px;border:1px solid #2E2218;border-radius:6px;background:#120D09;overflow:hidden;}
+  .mail-row{display:grid;grid-template-columns:70px minmax(0,1fr);align-items:center;gap:8px;padding:0 14px;min-height:40px;border-bottom:1px solid #2E2218;font-size:13px;color:#E4D8C2;}
+  .mail-row>span{color:#8B7456;font-size:12px;}
+  .mail-row b{font-weight:500;overflow-wrap:anywhere;}
+  .mail-row input{background:transparent;border:none;color:#F6EEDD;font-size:14px;padding:11px 0;width:100%;font-family:var(--sans);}
+  .mail-row input:focus{outline:none;box-shadow:none;}
+  .mail-row:focus-within{box-shadow:inset 0 0 0 1px var(--accent);}
+  .mail textarea{display:block;width:100%;min-height:220px;border:none;background:transparent;padding:14px;color:#EFE6D4;font-size:14px;line-height:1.6;resize:vertical;font-family:var(--sans);}
+  .mail textarea:focus{outline:none;box-shadow:inset 0 0 0 1px var(--accent);}
+  .mail-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid #2E2218;background:#0F0B08;}
+  .mail-foot .wk-linkchip{margin:0;}
+  /* overview build order */
+  .build-list{display:flex;flex-direction:column;gap:8px;}
+  .bl-row{display:grid;grid-template-columns:130px minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;background:#0F0B08;border:1px solid #2E2218;border-radius:6px;color:#E4D8C2;font:inherit;font-size:13px;cursor:pointer;}
+  .bl-row:hover{border-color:var(--accent);}
+  .bl-name{font-weight:600;}
+  .bl-val{color:#9C8768;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .bl-s{font-size:11px;font-weight:700;color:#8B7456;}
+  .bl-s.done{color:var(--green);}
+  @media (max-width:820px){
+    .os-split{flex-direction:column;}
+    .os-status{display:none;}
+    .os-dock{height:42px;}
+    .dock-btn{height:42px;padding:0 13px;}
+    .term-row,.tl{grid-template-columns:1fr;gap:4px;}
+    .term-row,.term-out{padding-left:0;}
+    .bl-row{grid-template-columns:1fr auto;}
+    .bl-val{grid-column:1/-1;order:3;}
+  }
 </style>
 <div id="root"></div>
 <script>
@@ -1381,6 +1456,10 @@ function confirmEnd(){
   }
   confirmTwice("end", "Click End again to abandon this mission.", hangupCall);
 }
+function vmChip(){ return '<div class="vm-chip"><span class="vm-dot"></span>pond-vm</div><div class="os-div"></div>'; }
+function vmStatus(right){
+  return '<div class="os-status"><span><i class="vm-dot"></i>session live</span><span>tun0 10.10.14.23</span><span class="sp"></span><span>'+esc(right)+'</span></div>';
+}
 function siteShell(crumbLabel, consoleHtml){
   var nav = [["goHome","Home"],["startPlaying","Missions"],["goProfile","Profile"],["showTutorial","How to play"]];
   var navHtml = nav.map(function(n){
@@ -1462,37 +1541,39 @@ function campSender(){
 function renderCampaignShell(){
   var c = campaign.caseObj;
   var tools = [
-    {id:"dash",   ic:ico("dash"), label:"Dash"},
-    {id:"infra",  ic:ico("infra"), label:"Infra"},
-    {id:"target", ic:ico("target"), label:"Target"},
-    {id:"compose",ic:ico("mail"), label:"Compose"},
+    {id:"dash",   ic:ico("dash"), label:"Overview"},
+    {id:"infra",  ic:ico("infra"), label:"Domain & relay"},
+    {id:"target", ic:ico("target"), label:"Targets"},
+    {id:"compose",ic:ico("mail"), label:"Email template"},
     {id:"results",ic:ico("results"), label:"Results"},
     {id:"notes",  ic:ico("notes"), label:"Notes"},
     {id:"hints",  ic:ico("bulb"), label:"Hints"}
   ];
   var dockHtml = tools.map(function(t){
-    return '<button class="dock-btn ' + (campaign.activeTool===t.id?"active":"") + '" onclick="setCampTool(\'' + t.id + '\')">' +
+    return '<button class="dock-btn ' + (campaign.activeTool===t.id?"active":"") + '" data-tool="' + t.id + '" onclick="setCampTool(\'' + t.id + '\')">' +
       '<span class="ic">' + t.ic + '</span>' + t.label + '</button>';
   }).join("");
 
   root.innerHTML = siteShell("Mass Phishing " + esc(c.id),
     '<div class="os-wrap ' + screenAnimClass("campaign") + '">' +
       '<div class="os-bar">' +
-        '<span class="os-winlbl">CONSOLE</span><div class="os-div"></div>' +
+        vmChip() +
         '<div class="os-title"><b>' + esc(c.org) + '</b> — ' + esc(c.id) + ' · mass phishing</div>' +
         '<div class="os-spacer"></div>' +
         '<div class="os-stat"><span class="lbl">Best CTR</span><span class="os-timer mono" id="camp-best">' + campaign.bestClick + '%</span></div>' +
         '<div class="os-stat"><span class="lbl">Round</span><span class="mono" id="camp-round">' + campaign.round + '/' + campaign.params.rounds + '</span></div>' +
       '</div>' +
       '<div class="os-body">' +
-        '<div class="os-dock"><div class="dock-title">TOOLS</div>' + dockHtml +
+        '<div class="os-dock">' + dockHtml +
           '<div class="dock-sp"></div>' +
           '<button class="dock-btn danger" onclick="confirmEnd()"><span class="ic">'+ico("power")+'</span>Finish</button>' +
         '</div>' +
         '<div class="os-work" id="os-work"></div>' +
       '</div>' +
+      vmStatus(campaign.diff.name + ' · ' + c.id) +
     '</div>');
   renderCampTool();
+  refreshCampTabs();
 }
 
 function setCampTool(id){
@@ -1507,21 +1588,31 @@ function setCampTool(id){
   renderCampTool();
 }
 
+function refreshCampTabs(){
+  if(!campaign) return;
+  var done={infra:!!(campaign.infra.brand||"").trim(), compose:!!(campaign.lure.body||"").trim()};
+  var btns=document.querySelectorAll(".dock-btn[data-tool]");
+  for(var i=0;i<btns.length;i++) btns[i].classList.toggle("done", !!done[btns[i].getAttribute("data-tool")]);
+}
 function syncComposeState(){
   var s=document.getElementById("camp-subject"), b=document.getElementById("camp-body");
   if(s) campaign.lure.subject=s.value;
   if(b) campaign.lure.body=b.value;
+  refreshCampTabs();
 }
 function saveCampNote(v){ if(campaign) campaign.notes=v; }
-function setInfra(k,v){ campaign.infra[k]=v; var d=document.getElementById("infra-preview"); if(d){ d.innerHTML=infraPreviewHtml(); } }
+function setInfra(k,v){ campaign.infra[k]=v; var d=document.getElementById("infra-preview"); if(d){ d.innerHTML=infraPreviewHtml(); } refreshCampTabs(); }
 function setTarget(v){ campaign.targetSeg=v; renderCampTool(); }
 
 function infraPreviewHtml(){
-  return '<div class="wl-row"><span>Spoof domain</span><b class="mono">'+esc(campDomain())+'</b></div>'+
-    '<div class="wl-row"><span>Sender address</span><b class="mono">'+esc(campSender())+'</b></div>'+
-    '<div class="wl-row"><span>Display name</span><b class="mono">'+esc(campaign.infra.display||"(none)")+'</b></div>';
+  return '<div class="tl"><span>domain</span><b>'+esc(campDomain())+'</b></div>'+
+    '<div class="tl"><span>relay</span><b>'+esc(campSender())+'</b></div>'+
+    '<div class="tl"><span>from-name</span><b>'+esc(campaign.infra.display||"(none)")+'</b></div>';
 }
 
+function buildRow(tool,name,value,done){
+  return '<button class="bl-row" onclick="setCampTool(\''+tool+'\')"><span class="bl-name">'+name+'</span><span class="bl-val mono">'+esc(value)+'</span><span class="bl-s '+(done?"done":"")+'">'+(done?"Done":"To do")+'</span></button>';
+}
 function toolHead(title, sub){
   return '<div class="wk-head"><div><h2>'+esc(title)+'</h2>'+(sub?'<p>'+esc(sub)+'</p>':'')+'</div></div>';
 }
@@ -1542,31 +1633,37 @@ function renderCampTool(){
           '<div class="wk-stat"><span class="v mono">'+campaign.round+'/'+campaign.params.rounds+'</span><span class="k">rounds used</span></div>'+
           '<div class="wk-stat"><span class="v mono">'+campaign.params.target+'%</span><span class="k">target</span></div>'+
         '</div>'+
-        '<div class="wk-card"><h4>Build status</h4>'+
-          '<div class="wl-row"><span>Infrastructure</span><b class="mono">'+esc(campDomain())+'</b></div>'+
-          '<div class="wl-row"><span>Target segment</span><b>'+esc(campaign.targetSeg)+'</b></div>'+
-          '<div class="wl-row"><span>Lure drafted</span><b>'+(campaign.lure.body.trim()?"yes":"no")+'</b></div>'+
-        '</div>'+
+        '<div class="wk-card" style="grid-column:1/-1"><h4>Build order</h4><div class="build-list">'+
+          buildRow("infra","Domain &amp; relay", (campaign.infra.brand||"").trim()?campDomain():"Not set up", !!(campaign.infra.brand||"").trim())+
+          buildRow("target","Targets", campaign.targetSeg, true)+
+          buildRow("compose","Email template", campaign.lure.body.trim()?"Drafted":"Empty", !!campaign.lure.body.trim())+
+        '</div></div>'+
         (last?'<div class="wk-card"><h4>Last round</h4><p><b>'+last.click+'% CTR.</b> Weakest: '+esc(last.weakest||"—")+' · lever: '+esc(last.lever||"—")+'</p></div>':'')+
       '</div>'+
-      '<div class="wk-actionbar"><button class="wk-go" onclick="setCampTool(\'compose\')">Go to composer →</button></div>';
+      '<div class="wk-actionbar"><button class="wk-go" onclick="setCampTool(\''+(!(campaign.infra.brand||"").trim()?"infra":!campaign.lure.body.trim()?"compose":"compose")+'\')">'+(!(campaign.infra.brand||"").trim()?"Start: set up domain &amp; relay →":!campaign.lure.body.trim()?"Next: write the email template →":"Open the email template to launch →")+'</button></div>';
   }
 
   else if(t==="infra"){
     var i=campaign.infra;
-    w.innerHTML = toolHead("Attack infrastructure", "Stand up the spoofed domain and sender your lure appears to come from. Simulated — nothing is registered.") +
-      '<div class="wk-form">'+
-        '<label>Impersonated brand / org<input class="wk-input" value="'+esc(i.brand)+'" oninput="setInfra(\'brand\',this.value)" placeholder="e.g. meridiantrust, microsoft, workday"></label>'+
-        '<label>Subdomain prefix<input class="wk-input" value="'+esc(i.subdomain)+'" oninput="setInfra(\'subdomain\',this.value)" placeholder="secure, login, mail, sso"></label>'+
-        '<label>TLD'+
-          '<select class="wk-input" onchange="setInfra(\'tld\',this.value)">'+
+    w.innerHTML = toolHead("Domain & relay", "Register the look-alike domain and set up the mail relay your lure is sent from. Simulated, nothing is registered.") +
+      '<div class="term">'+
+        '<div class="term-bar">operator@pond-vm: ~/infra</div>'+
+        '<div class="term-body">'+
+          '<div class="term-cmd"><i>$</i> register-domain</div>'+
+          '<div class="term-row"><label for="in-brand">--brand</label><input id="in-brand" class="wk-input" value="'+esc(i.brand)+'" oninput="setInfra(\'brand\',this.value)" placeholder="meridiantrust, microsoft, workday"></div>'+
+          '<div class="term-row"><label for="in-sub">--subdomain</label><input id="in-sub" class="wk-input" value="'+esc(i.subdomain)+'" oninput="setInfra(\'subdomain\',this.value)" placeholder="secure, login, mail, sso"></div>'+
+          '<div class="term-row"><label for="in-tld">--tld</label><select id="in-tld" class="wk-input" onchange="setInfra(\'tld\',this.value)">'+
             ['.com','.net','.co','.org','.io','.support','.help'].map(function(x){return '<option '+(i.tld===x?"selected":"")+'>'+x+'</option>';}).join("")+
-          '</select></label>'+
-        '<label>Sender mailbox<input class="wk-input" value="'+esc(i.sender)+'" oninput="setInfra(\'sender\',this.value)" placeholder="it-support, no-reply, hr, billing"></label>'+
-        '<label>Display name (optional)<input class="wk-input" value="'+esc(i.display)+'" oninput="setInfra(\'display\',this.value)" placeholder="IT Service Desk"></label>'+
+          '</select></div>'+
+          '<div class="term-cmd"><i>$</i> configure-relay</div>'+
+          '<div class="term-row"><label for="in-mbox">--mailbox</label><input id="in-mbox" class="wk-input" value="'+esc(i.sender)+'" oninput="setInfra(\'sender\',this.value)" placeholder="it-support, no-reply, hr, billing"></div>'+
+          '<div class="term-row"><label for="in-disp">--from-name</label><input id="in-disp" class="wk-input" value="'+esc(i.display)+'" oninput="setInfra(\'display\',this.value)" placeholder="IT Service Desk (optional)"></div>'+
+          '<div class="term-cmd"><i>$</i> status</div>'+
+          '<div class="term-out" id="infra-preview">'+infraPreviewHtml()+'</div>'+
+        '</div>'+
       '</div>'+
-      '<div class="wk-preview"><h4>Live preview</h4><div id="infra-preview">'+infraPreviewHtml()+'</div>'+
-        '<p class="wk-hint">Tip: a plausible subdomain + matching mailbox on a look-alike domain reads as more legit than a random address. Obvious mismatches raise report-rates.</p></div>';
+      '<p class="wk-hint">A believable subdomain and a matching mailbox on a look-alike domain read as more legitimate. Obvious mismatches raise report rates.</p>'+
+      '<div class="wk-actionbar"><button class="wk-go" onclick="setCampTool(\'target\')">Next: choose targets →</button></div>';
   }
 
   else if(t==="target"){
@@ -1579,20 +1676,25 @@ function renderCampTool(){
       '</div>'+
       '<div class="wk-card" style="margin-top:16px"><h4>Population intel</h4><p>'+esc(c.population)+'</p>'+
         '<div class="wl-row"><span>Skepticism</span><b>'+esc(campaign.params.skepticism)+'</b></div></div>'+
-      '<div class="wk-hint" style="margin-top:12px">Focusing a segment concentrates your lure on their specific triggers — higher ceiling if you guessed right, wasted round if you guessed wrong.</div>';
+      '<div class="wk-hint" style="margin-top:12px">Focusing a segment concentrates your lure on their specific triggers: higher ceiling if you guessed right, wasted round if you guessed wrong.</div>'+
+      '<div class="wk-actionbar"><button class="wk-go" onclick="setCampTool(\'compose\')">Next: write the email template →</button></div>';
   }
 
   else if(t==="compose"){
     var l=campaign.lure;
-    w.innerHTML = toolHead("Compose lure", "From "+campSender()+" → "+campaign.targetSeg) +
-      '<div class="wk-compose">'+
-        '<label class="wk-cl">Subject line <span class="wk-cl-hint">the hook in their inbox</span><input id="camp-subject" class="wk-input" value="'+esc(l.subject)+'" placeholder="Action required: verify your account before Friday"></label>'+
-        '<label class="wk-cl">Email body <span class="wk-cl-hint">the message and its call to action</span><textarea id="camp-body" class="wk-textarea" placeholder="Write the email the population receives. Work in your call-to-action and how the link is framed.">'+esc(l.body)+'</textarea></label>'+
-        '<div class="wk-linkchip">Embedded link renders as <b class="mono">https://'+esc(campDomain())+'/verify</b> <span>(simulated)</span></div>'+
-        '<button class="wk-go primary" id="camp-send" onclick="launchRound()">Launch round '+(campaign.round+1)+' →</button>'+
+    w.innerHTML = toolHead("Email template", "The message your population receives. The sender comes from Domain & relay.") +
+      '<div class="mail">'+
+        '<div class="mail-row"><span>From</span><b class="mono">'+esc((campaign.infra.display?campaign.infra.display+" ":"")+"<"+campSender()+">")+'</b></div>'+
+        '<div class="mail-row"><span>To</span><b>'+esc(campaign.targetSeg)+'</b></div>'+
+        '<label class="mail-row" for="camp-subject"><span>Subject</span><input id="camp-subject" value="'+esc(l.subject)+'" placeholder="Action required: verify your account before Friday"></label>'+
+        '<textarea id="camp-body" aria-label="Email body" placeholder="Write the email the population receives. Work in your call-to-action and how the link is framed.">'+esc(l.body)+'</textarea>'+
+        '<div class="mail-foot"><div class="wk-linkchip">Link shows as <b class="mono">https://'+esc(campDomain())+'/verify</b> <span>(simulated)</span></div>'+
+        '<button class="wk-go primary" id="camp-send" onclick="launchRound()">Launch round '+(campaign.round+1)+' →</button></div>'+
       '</div>';
     var body=document.getElementById("camp-body");
     if(body) body.addEventListener("input", syncComposeState);
+    var subj=document.getElementById("camp-subject");
+    if(subj) subj.addEventListener("input", syncComposeState);
   }
 
   else if(t==="results"){
@@ -1854,26 +1956,30 @@ function renderCallShell(){
   root.innerHTML = siteShell(esc(call.mode.name) + " " + esc(call.caseObj.id),
     '<div class="os-wrap ' + screenAnimClass("call-"+call.stage) + '">' +
       '<div class="os-bar">' +
-        '<span class="os-winlbl">CONSOLE</span><div class="os-div"></div>' +
+        vmChip() +
         '<div class="os-title"><b>' + esc(headerName) + '</b> — ' + esc(call.caseObj.id) + ' · ' + esc(call.mode.name.toLowerCase()) + esc(stageBadge) + '</div>' +
         '<div class="os-spacer"></div>' +
         '<div class="os-stat"><span class="lbl">Susp</span><div class="os-gauge"><div class="os-gauge-fill" id="gauge-fill" style="width:' + call.suspicion + '%"></div></div><span id="gauge-num">' + call.suspicion + '</span></div>' +
         '<div class="os-stat"><span class="lbl">Time</span><span class="os-timer mono" id="timer-val">' + fmtTime(call.seconds) + '</span></div>' +
       '</div>' +
       '<div class="os-body">' +
-        '<div class="os-dock"><div class="dock-title">TOOLS</div>' + dockHtml +
+        '<div class="os-dock">' + dockHtml +
           '<div class="dock-sp"></div>' +
           '<button class="dock-btn danger" onclick="confirmEnd()"><span class="ic">'+ico("power")+'</span>End</button>' +
         '</div>' +
+        '<div class="os-split">' +
         '<div class="os-panel ' + (call.activeTool?"":"collapsed") + '" id="os-panel">' +
           '<div class="panel-head" id="panel-head"></div>' +
           '<div class="panel-body" id="panel-body"></div>' +
         '</div>' +
         '<div class="os-main">' +
+          '<div class="app-head">' + ico(call.mode.interaction==="email" ? "mail" : "phone") + (call.mode.interaction==="email" ? "Mail" : "Softphone") + '<span class="sub">' + esc(headerName) + '</span></div>' +
           '<div class="msgs" id="msgs"><div class="msg sys">— ' + (call.mode.interaction==="email" ? "inbox empty. Write the first email below." : "call connected") + ' —</div></div>' +
           composerHtml +
         '</div>' +
+        '</div>' +
       '</div>' +
+      vmStatus(call.diff.name + ' · ' + call.caseObj.id) +
     '</div>');
 
   renderTool();
