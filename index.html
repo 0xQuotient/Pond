@@ -763,6 +763,31 @@
   }
 
   .gear{display:inline-block;margin-left:10px;padding:1px 8px;border:1px solid var(--accent);border-radius:999px;color:var(--accent);font-family:var(--mono);font-size:10.5px;font-weight:600;vertical-align:middle;}
+
+  /* ---- layout pass: Burp-style regions ---- */
+  .goal-strip{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 16px;background:#17100A;border-bottom:1px solid #2E2218;font-size:13px;}
+  .goal-strip .gs-k{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:none;color:#14100B;background:var(--k-accent,#F0731F);border-radius:3px;padding:2px 7px;font-weight:700;}
+  .goal-strip .gs-t{color:#E8DCC4;flex:1;min-width:200px;}
+  .goal-strip .gs-bit{font-family:var(--mono);font-size:11px;color:#B09C7E;}
+  .goal-strip .gs-bit i{font-style:normal;color:#8B7456;}
+  .dock-div{align-self:stretch;display:flex;align-items:center;padding:0 12px 0 14px;font-family:var(--mono);font-size:9.5px;color:#6E5C44;border-left:1px solid #2E2218;white-space:nowrap;}
+  .dock-div:first-child{border-left:none;padding-left:16px;}
+  .step-n{font-style:normal;font-family:var(--mono);font-size:10px;width:16px;height:16px;line-height:16px;text-align:center;border-radius:50%;border:1px solid #5A4630;color:#B09C7E;margin-right:6px;}
+  .dock-btn.active .step-n{border-color:var(--k-accent,#F0731F);color:var(--k-accent,#F0731F);}
+  .dock-btn.done .step-n{background:#E6B422;border-color:#E6B422;color:#14100B;}
+  .kv{display:flex;flex-direction:column;border:1px solid #2E2218;border-radius:5px;overflow:hidden;}
+  .kv>div{display:flex;gap:10px;padding:7px 11px;border-bottom:1px solid #251A11;font-size:12px;}
+  .kv>div:last-child{border-bottom:none;}
+  .kv span{flex:0 0 68px;color:#8B7456;font-family:var(--mono);font-size:11px;}
+  .kv b{font-weight:500;color:#E3D6BC;min-width:0;overflow-wrap:anywhere;}
+  .fold{margin-top:10px;border:1px solid #2E2218;border-radius:5px;background:#17100A;}
+  .fold summary{cursor:pointer;padding:8px 11px;font-size:12px;color:#C5B496;font-family:var(--mono);}
+  .fold p{margin:0;padding:0 11px 10px;font-size:12px;line-height:1.55;color:#B09C7E;}
+  .next-step{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;margin-bottom:16px;border:1px solid var(--k-accent,#F0731F);border-radius:6px;background:#1F140B;}
+  .next-step .ns-k{display:block;font-family:var(--mono);font-size:10px;color:#B09C7E;margin-bottom:3px;}
+  .next-step b{font-size:15px;color:#F1E6CF;}
+  .wk-grid.one{grid-template-columns:1fr;}
+  .wk-head{margin-bottom:16px;}
 </style>
 <div id="root"></div>
 <script>
@@ -1545,20 +1570,28 @@ function campSender(){
   return (i.sender||"no-reply")+"@"+campDomain();
 }
 
+function goalStrip(goal, bits){
+  return '<div class="goal-strip"><span class="gs-k">Goal</span><span class="gs-t">' + esc(goal) + '</span>' +
+    (bits||[]).map(function(b){ return '<span class="gs-bit"><i>' + esc(b[0]) + '</i> ' + esc(b[1]) + '</span>'; }).join("") + '</div>';
+}
+
 function renderCampaignShell(){
   var c = campaign.caseObj;
   var tools = [
     {id:"dash",   ic:ico("dash"), label:"Overview"},
-    {id:"infra",  ic:ico("infra"), label:"Domain & relay"},
-    {id:"target", ic:ico("target"), label:"Targets"},
-    {id:"compose",ic:ico("mail"), label:"Email template"},
-    {id:"results",ic:ico("results"), label:"Results"},
+    {div:"Workflow"},
+    {id:"infra",  ic:ico("infra"), label:"Domain & relay", n:1},
+    {id:"target", ic:ico("target"), label:"Targets", n:2},
+    {id:"compose",ic:ico("mail"), label:"Email template", n:3},
+    {id:"results",ic:ico("results"), label:"Results", n:4},
+    {div:"Reference"},
     {id:"notes",  ic:ico("notes"), label:"Notes"},
     {id:"hints",  ic:ico("bulb"), label:"Hints"}
   ];
   var dockHtml = tools.map(function(t){
+    if(t.div) return '<span class="dock-div">' + t.div + '</span>';
     return '<button class="dock-btn ' + (campaign.activeTool===t.id?"active":"") + '" data-tool="' + t.id + '" onclick="setCampTool(\'' + t.id + '\')">' +
-      '<span class="ic">' + t.ic + '</span>' + t.label + '</button>';
+      '<span class="ic">' + t.ic + '</span>' + (t.n?'<i class="step-n">'+t.n+'</i>':'') + t.label + '</button>';
   }).join("");
 
   root.innerHTML = siteShell("Mass Phishing " + esc(c.id),
@@ -1570,6 +1603,7 @@ function renderCampaignShell(){
         (campaign.diff.aids.stats ? '<div class="os-stat"><span class="lbl">Best CTR</span><span class="os-timer mono" id="camp-best">' + campaign.bestClick + '%</span></div>' +
         '<div class="os-stat"><span class="lbl">Round</span><span class="mono" id="camp-round">' + campaign.round + '/' + campaign.params.rounds + '</span></div>' : '') +
       '</div>' +
+      goalStrip("Get the highest click-through rate you can on " + c.org, [["clear at", campaign.params.target + "% CTR"]]) +
       '<div class="os-body">' +
         '<div class="os-dock">' + dockHtml +
           '<div class="dock-sp"></div>' +
@@ -1631,23 +1665,25 @@ function renderCampTool(){
 
   if(t==="dash"){
     var last = campaign.rounds.length ? campaign.rounds[campaign.rounds.length-1] : null;
-    w.innerHTML = toolHead("Campaign dashboard", c.org+" · "+c.id) +
-      '<div class="wk-grid">'+
-        '<div class="wk-card"><h4>Objective</h4><p>Maximize click-through across the population. You get up to <b>'+campaign.params.rounds+' rounds</b> to refine — your single best round is your score. Target to clear: <b>'+campaign.params.target+'% CTR</b>.</p></div>'+
-        '<div class="wk-card"><h4>Scenario</h4><p>'+esc(c.blurb)+'</p></div>'+
+    var hasInfra=!!(campaign.infra.brand||"").trim(), hasMail=!!campaign.lure.body.trim();
+    var nextTool = !hasInfra?"infra":"compose";
+    var nextTxt = !hasInfra?"Set up the domain & relay":!hasMail?"Write the email template":"Launch the next round";
+    var nextStep = campaign.rounds.length>=campaign.params.rounds ? "" :
+      '<div class="next-step"><div><span class="ns-k">Next step</span><b>'+nextTxt+'</b></div><button class="wk-go" onclick="setCampTool(\''+nextTool+'\')">Go &rarr;</button></div>';
+    w.innerHTML = toolHead("Overview", c.org+" · "+c.id) + nextStep +
+      '<div class="wk-grid one">'+
+        '<div class="wk-card"><h4>Briefing</h4><p>'+esc(c.blurb)+'</p><div class="kv" style="margin-top:12px"><div><span>Score</span><b>Your single best round</b></div><div><span>Rounds</span><b>'+campaign.params.rounds+' max, refine between each</b></div></div></div>'+
         (campaign.diff.aids.stats ? '<div class="wk-stat-row">'+
           '<div class="wk-stat"><span class="v mono">'+campaign.bestClick+'%</span><span class="k">best CTR</span></div>'+
           '<div class="wk-stat"><span class="v mono">'+campaign.round+'/'+campaign.params.rounds+'</span><span class="k">rounds used</span></div>'+
-          '<div class="wk-stat"><span class="v mono">'+campaign.params.target+'%</span><span class="k">target</span></div>'+
         '</div>' : '')+
-        '<div class="wk-card" style="grid-column:1/-1"><h4>Build order</h4><div class="build-list">'+
-          buildRow("infra","Domain &amp; relay", (campaign.infra.brand||"").trim()?campDomain():"Not set up", !!(campaign.infra.brand||"").trim())+
-          buildRow("target","Targets", campaign.targetSeg, true)+
-          buildRow("compose","Email template", campaign.lure.body.trim()?"Drafted":"Empty", !!campaign.lure.body.trim())+
+        '<div class="wk-card"><h4>Build order</h4><div class="build-list">'+
+          buildRow("infra","1 · Domain &amp; relay", hasInfra?campDomain():"Not set up", hasInfra)+
+          buildRow("target","2 · Targets", campaign.targetSeg, true)+
+          buildRow("compose","3 · Email template", hasMail?"Drafted":"Empty", hasMail)+
         '</div></div>'+
         (last?'<div class="wk-card"><h4>Last round</h4><p><b>'+last.click+'% CTR.</b> Weakest: '+esc(last.weakest||"—")+' · lever: '+esc(last.lever||"—")+'</p></div>':'')+
-      '</div>'+
-      '<div class="wk-actionbar"><button class="wk-go" onclick="setCampTool(\''+(!(campaign.infra.brand||"").trim()?"infra":!campaign.lure.body.trim()?"compose":"compose")+'\')">'+(!(campaign.infra.brand||"").trim()?"Start: set up domain &amp; relay →":!campaign.lure.body.trim()?"Next: write the email template →":"Open the email template to launch →")+'</button></div>';
+      '</div>';
   }
 
   else if(t==="infra"){
@@ -1946,16 +1982,15 @@ function renderCallShell(){
       '</div>';
   }
 
-  var tools = [
-    {id:"objective", ic:ico("brief"), label:"Brief"},
-    {id:"notes",     ic:ico("notes"), label:"Notes"}
-  ];
-  if(call.diff.aids.trail) tools.splice(1,0,{id:"log", ic:ico("log"), label:"Log"});
-  if(call.dossier) tools.splice(1,0,{id:"dossier", ic:ico("osint"), label:"OSINT"});
-  if(!call.diff.forgiving) tools.push({id:"flag", ic:ico("flag"), label:"Flag"});
+  var tools = [{div:"Intel"}, {id:"objective", ic:ico("brief"), label:"Brief"}];
+  if(call.dossier) tools.push({id:"dossier", ic:ico("osint"), label:"OSINT"});
+  if(!call.diff.forgiving) tools.push({div:"Submit"}, {id:"flag", ic:ico("flag"), label:"Flag"});
+  tools.push({div:"Reference"}, {id:"notes", ic:ico("notes"), label:"Notes"});
+  if(call.diff.aids.trail) tools.push({id:"log", ic:ico("log"), label:"Log"});
   tools.push({id:"hints", ic:ico("bulb"), label:"Hints"});
 
   var dockHtml = tools.map(function(t){
+    if(t.div) return '<span class="dock-div">' + t.div + '</span>';
     return '<button class="dock-btn ' + (call.activeTool===t.id?"active":"") + '" onclick="setTool(\'' + t.id + '\')">' +
       '<span class="ic">' + t.ic + '</span>' + t.label + '</button>';
   }).join("");
@@ -1969,6 +2004,7 @@ function renderCallShell(){
         (call.diff.aids.meter ? '<div class="os-stat"><span class="lbl">Susp</span><div class="os-gauge"><div class="os-gauge-fill" id="gauge-fill" style="width:' + call.suspicion + '%"></div></div><span id="gauge-num">' + call.suspicion + '</span></div>' : '') +
         (call.diff.aids.clock ? '<div class="os-stat"><span class="lbl">Time</span><span class="os-timer mono" id="timer-val">' + fmtTime(call.seconds) + '</span></div>' : '') +
       '</div>' +
+      goalStrip(call.stage==="recon" ? call.caseObj.recon.objective : call.caseObj.objective, call.stage==="recon" ? [["stage","recon"]] : []) +
       '<div class="os-body">' +
         '<div class="os-dock">' + dockHtml +
           '<div class="dock-sp"></div>' +
@@ -2037,10 +2073,18 @@ function renderTool(){
     } else {
       targetHtml = '<strong>' + esc(tc.who || c.name) + '</strong>' + (tc.vibe ? '<span class="vibe">' + esc(tc.vibe) + '</span>' : "");
     }
-    body.innerHTML = '<h5>Objective</h5><div class="p-card">' + esc(obj) + '</div>' +
-      '<h5>Target</h5><div class="p-card">' + targetHtml + '</div>' +
-      '<h5>Scenario</h5><div class="p-card">' + esc(c.blurb) + '</div>' +
-      '<h5>Channel &amp; difficulty</h5><div class="p-card">' + esc(call.mode.name) + ' · <strong>' + esc(call.diff.name) + '</strong><br>' + esc(call.diff.meta.join(" · ")) + '</div>' +
+    var tgtName = call.stage==="recon" ? who : (c.targetName || tc.who || c.name);
+    var tgtRole = c.targetName ? (c.targetRole + " · " + c.company) : "";
+    body.innerHTML = '<h5>Target</h5><div class="kv">' +
+        '<div><span>Name</span><b>' + esc(tgtName) + '</b></div>' +
+        (tgtRole ? '<div><span>Role</span><b>' + esc(tgtRole) + '</b></div>' : '') +
+        (tc.vibe ? '<div><span>Manner</span><b>' + esc(tc.vibe) + '</b></div>' : '') +
+        '<div><span>Channel</span><b>' + esc(call.mode.name) + '</b></div>' +
+        '<div><span>Level</span><b>' + esc(call.diff.name) + '</b></div>' +
+      '</div>' +
+      '<h5>Guides on this level</h5><div class="p-card">' + esc(call.diff.meta[3] ? call.diff.meta[3].replace("Guides: ","") : "none") + '</div>' +
+      '<details class="fold"><summary>Scenario</summary><p>' + esc(c.blurb) + '</p></details>' +
+      '<details class="fold"><summary>Target traits</summary><p>' + esc(call.diff.meta.slice(0,3).join(" · ")) + '</p></details>' +
       (call.reconIntel ? '<h5>Leverage acquired</h5><div class="p-card" style="color:var(--amber)">' + esc(call.reconIntel) + '</div>' : "");
   }
   else if(t==="flag"){
