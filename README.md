@@ -1,47 +1,81 @@
 # Pond
 
-Hands-on social engineering labs, with a darker, murkier mood than Hack The Box.
+Hands-on social engineering labs. Talk, write and pretext your way past AI-played targets instead of exploiting code.
 
-A social-engineering training range, modeled on HackTheBox but for people. You talk, persuade and pretext your way past AI-played targets instead of exploiting code.
+Pond is a single-page training game in the style of Hack The Box, built around people instead of machines. You pick a mission, work from a simulated workstation, and try to capture a flag from a target who has their own personality, suspicions and limits.
+
+> Everything in Pond is fictional. Organizations, people, domains and dossiers are invented for each run, and all infrastructure is simulated. Nothing is sent anywhere. It is a training game, not a phishing kit.
+
+## Contents
+
+- [Modes](#modes)
+- [Difficulty](#difficulty)
+- [Ranks](#ranks)
+- [Running it](#running-it)
+- [Development](#development)
+- [Project layout](#project-layout)
+- [Roadmap](#roadmap)
+- [License](#license)
 
 ## Modes
 
-| Mode | What you do |
-| --- | --- |
-| Vishing | Live simulated phone call against one target. Get the secret before the timer or the target's suspicion runs out. |
-| Spear phishing | Read a generated OSINT dossier, then write targeted emails to one person. |
-| Mass phishing | Set up spoofed sender infrastructure, craft one lure, send it to a whole population, and chase the best click rate over up to five rounds. |
+| Mode | Gear | Missions | What you do |
+| --- | --- | --- | --- |
+| Vishing | Lure | 5 | Run a live simulated phone call against one target and get the secret out of them. |
+| Spear phishing | Spear | 3 | Read a generated OSINT dossier, then write targeted emails to one person. |
+| Mass phishing | Net | 3 | Set up a spoofed domain and relay, write one lure, send it to a whole population and refine it over several rounds. |
 
-Each mode has several case files and five difficulty tiers (Recruit, Operator, Handler, Ghost, Impossible). Hints are opt-in and mark a clear as "assisted". After every run you get a debrief with the suspicion trail, the transcript, and optional coach notes.
+Each mission opens in a browser workspace modeled on a pentest VM: a goal bar, tabs grouped by role (intel, workflow, reference), a side panel for the brief, and a main pane for the call, inbox or campaign tools.
 
-## Scope
+Hints are opt-in. Using one marks the clear as "assisted". After each run you get a debrief with the transcript and optional coach notes.
 
-Everything is fictional: organizations, people, domains and dossiers are invented per run, and all infrastructure is simulated. Nothing is sent anywhere. This is a training game, not a phishing kit.
+## Difficulty
 
-## How it runs
+Five tiers, with fewer on-screen aids as you go up. The early tiers work like gutter bumpers: they keep you in the lane while you learn, then come off.
 
-`index.html` is a single self-contained page written as a [Claude artifact](https://claude.ai). It relies on one thing the artifact runtime provides through `window.claude`:
+| Tier | Suspicion meter | Clock | Activity log | Campaign stats |
+| --- | :---: | :---: | :---: | :---: |
+| Recruit | yes | yes | yes | yes |
+| Operator | no | yes | no | yes |
+| Handler | no | no | no | no |
+| Ghost | no | no | no | no |
+| Impossible | no | no | no | no |
 
-- `sample`, which asks Claude to play the target, generate dossiers, simulate campaign results and write coach notes, on the viewer's own Claude account.
+Hidden does not mean disabled. The timer and the suspicion score keep running, and the mission still ends when either runs out. Impossible adds a recon stage against a second linked contact before the main target.
 
-There is no leaderboard and no shared backend. Per-player profile and progress are stored in the browser's `localStorage`.
+## Ranks
 
-Outside claude.ai the AI features report "Claude isn't available in this view". To click through the whole UI locally with canned replies, build the standalone page with the dev shim:
+Clearing missions raises your rank:
+
+| Rank | Missions cleared |
+| --- | ---: |
+| Chum | 0 |
+| Bobber | 3 |
+| Reel Deal | 8 |
+| Net Worth | 16 |
+| Skipper | 26 |
+| Kraken | 38 |
+| Anglerfish | 55 |
+
+## Running it
+
+`index.html` is one self-contained file with no build step and no dependencies. It is written as a [Claude artifact](https://claude.ai) and uses one runtime API, `window.claude.sample`, to play the targets, generate dossiers, simulate campaign results and write coach notes on the viewer's own Claude account.
+
+There is no backend and no leaderboard. Profile and progress are stored in the browser's `localStorage`.
+
+**Inside claude.ai:** publish `index.html` as-is as an artifact and declare the `sample` capability only. The file deliberately has no `<html>`, `<head>` or `<body>` wrapper, because the artifact host adds one.
+
+**Anywhere else:** the page loads, but the AI features show "Claude isn't available in this view". To click through the whole interface with canned replies, build the standalone page with the dev shim:
 
 ```bash
 python3 tools/build_standalone.py --mock
-# then open dist/standalone.html in a browser
 ```
 
-Without `--mock` the page loads but has no AI backend.
+Then open `dist/standalone.html` in a browser. Without `--mock` there is no AI backend.
 
-## Publishing as an artifact
+## Development
 
-Publish `index.html` as-is. It has no `<html>`, `<head>` or `<body>` wrapper on purpose, because the artifact host adds one. Declare the `sample` capability only.
-
-## Tests
-
-Headless flow tests cover navigation, mission setup, hints, timer, end screen, callsign changes and the campaign loop, against a fake `window.claude`:
+Tests are headless browser flows run against a fake `window.claude`. They cover navigation, mission setup, hints, the timer, difficulty gating, the end screen, callsign changes and the campaign loop.
 
 ```bash
 pip install playwright
@@ -49,8 +83,24 @@ playwright install chromium
 python3 tests/flow_test.py
 ```
 
-## Known gaps
+The suite prints `ALL OK` when everything passes.
 
-- The real model's behavior at the hardest tiers hasn't been tuned since moving to the artifact runtime's fast tier.
-- The Mass Phishing composer and results screens have only been exercised with canned results.
-- No license has been chosen yet.
+## Project layout
+
+```
+index.html                 the whole app (HTML, CSS and JS)
+tools/build_standalone.py  wraps index.html into a full page, optionally with the mock backend
+tools/dev-shim.js          fake window.claude with canned replies
+tests/flow_test.py         Playwright flow tests
+```
+
+## Roadmap
+
+- Technical attack modes alongside the social ones, such as address poisoning, clickjacking and watering holes.
+- A warning cue before the call ends when the clock is hidden.
+- Tuning the hardest tiers against the real model.
+- Screenshots in this README.
+
+## License
+
+None chosen yet, so all rights are reserved by default.
