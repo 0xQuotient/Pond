@@ -2,6 +2,8 @@
 
 Hands-on social engineering labs. Talk, write and pretext your way past AI-played targets instead of exploiting code.
 
+**[Play Pond in your browser](https://claude.ai/artifact/Fqf5BNoawKYwFNBM2vUgLW)** (needs a free or paid Claude account).
+
 Pond is a single-page training game in the style of Hack The Box, built around people instead of machines. You pick a mission, work from a simulated workstation, and try to capture a flag from a target who has their own personality, suspicions and limits.
 
 > Everything in Pond is fictional. Organizations, people, domains and dossiers are invented for each run, and all infrastructure is simulated. Nothing is sent anywhere. It is a training game, not a phishing kit.
@@ -63,7 +65,7 @@ Clearing missions raises your rank:
 
 Everything happens in the browser. No install, no terminal.
 
-**If someone shared the Pond link with you:** open it while signed in to Claude and play.
+**To just play:** open the [Pond link](https://claude.ai/artifact/Fqf5BNoawKYwFNBM2vUgLW) while signed in to Claude.
 
 **To host your own copy:**
 1. Open [`index.html`](index.html) here on GitHub and use the copy button.
