@@ -61,11 +61,20 @@ Clearing missions raises your rank:
 
 ## How to play
 
-1. **Get it into Claude.** Pond needs Claude to run, so it is meant to live as a [Claude artifact](https://claude.ai). Create a new artifact, paste in the contents of `index.html`, and publish it. Details are under [Running it](#running-it).
-2. **Pick a callsign.** Your profile and progress stay in your browser.
-3. **Choose a mode, a mission and a difficulty,** then launch. The workspace opens with a goal bar, a brief, and the tools for that mode.
-4. **Work the target.** Talk (vishing), write emails (spear phishing) or build and refine a campaign (mass phishing). Capture the flag before suspicion or the clock gets you.
-5. **Read the debrief.** Review the transcript, then try a higher tier.
+Everything happens in the browser. No install, no terminal.
+
+**If someone shared the Pond link with you:** open it while signed in to Claude and play.
+
+**To host your own copy:**
+1. Open [`index.html`](index.html) here on GitHub and use the copy button.
+2. In a Claude chat, ask: "Publish this as an artifact" and paste the code.
+3. In the artifact, use **Share** to send the link to anyone with a Claude account.
+
+Once you are in:
+1. Pick a callsign. Your progress stays in your browser.
+2. Choose a mode, a mission and a difficulty, then launch.
+3. Work the target: talk (vishing), write emails (spear phishing) or build and refine a campaign (mass phishing). Capture the flag before suspicion or the clock gets you.
+4. Read the debrief, then try a higher tier.
 
 Shortcuts: `Enter` sends a call message, `Ctrl/Cmd+Enter` sends an email or launches a campaign round, and `Esc` cancels a pending "click again to confirm".
 
@@ -81,15 +90,17 @@ What that means in practice:
 - **This repo is the source.** Cloning it or opening `index.html` directly gives you the interface but no AI, and the page reports "Claude isn't available in this view".
 - **No backend means no leaderboard.** Profile and progress live in the browser's `localStorage`, so clearing site data resets them.
 
-To click through the whole interface offline with canned replies, build the standalone page with the dev shim:
+Developers can click through the interface offline with canned replies; see [Development](#development).
+
+## Development
+
+This section is for contributors. Players do not need it.
+
+To click through the interface offline with canned replies (scripted, not a real model), build the standalone page and open `dist/standalone.html`:
 
 ```bash
 python3 tools/build_standalone.py --mock
 ```
-
-Then open `dist/standalone.html` in a browser. This is for development only. The replies are scripted, not played by a model.
-
-## Development
 
 Tests are headless browser flows run against a fake `window.claude`. They cover navigation, mission setup, hints, the timer, difficulty gating, the end screen, callsign changes and the campaign loop.
 
