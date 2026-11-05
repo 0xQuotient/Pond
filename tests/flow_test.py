@@ -47,6 +47,11 @@ async def run(b,tag,w,h):
     for d,exp in (("easy",(1,1,1)),("hard",(0,0,0)),("impossible",(0,0,0))):
         got=await ev("(function(){var a=DIFFICULTIES.filter(function(x){return x.id==='%s'})[0].aids;return [a.meter,a.clock,a.trail]})()"%d)
         check(tag+" aids "+d, tuple(got)==exp, got)
+    # security: esc() neutralises quotes and tags for attribute and text contexts
+    e1=await ev("esc('\"><img src=x onerror=window.__xss=1>\\'')")
+    check(tag+" esc blocks quote/tag injection", '"' not in e1 and "'" not in e1 and "<" not in e1, e1)
+    inj=await ev("(function(){var d=document.createElement('div');d.innerHTML='<input value=\"'+esc('\"><img src=x onerror=window.__xss=1> onfocus=1')+'\">';return [d.children.length,d.querySelector('img')===null,d.firstChild.attributes.length]})()")
+    check(tag+" payload stays inside attribute", inj[0]==1 and inj[1] and inj[2]==1, inj)
     # UX: Escape clears armed confirm; hidden-clock cue
     await ev("armed.key='end'"); await pg.keyboard.press("Escape"); check(tag+" Escape disarms confirm", await ev("armed.key")==None)
     await ev("(function(){var d=call.diff.aids.clock; call.diff.aids.clock=0; call.seconds=31; tick(); call.diff.aids.clock=d;})()"); await pg.wait_for_timeout(100)

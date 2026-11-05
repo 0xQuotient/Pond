@@ -14,6 +14,7 @@ Pond is a single-page training game in the style of Hack The Box, built around p
 - [Ranks](#ranks)
 - [Running it](#running-it)
 - [Development](#development)
+- [Security notes](#security-notes)
 - [Project layout](#project-layout)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -99,6 +100,19 @@ python3 tests/flow_test.py
 ```
 
 The suite prints `ALL OK` when everything passes.
+
+## Security notes
+
+Pond was audited before its 1.0 release. What was checked and what to know:
+
+- **Output escaping:** every piece of player input and model output is escaped before it reaches the page, including in HTML attributes. A test checks that a quote-and-tag payload stays inert.
+- **No dynamic code:** no `eval`, `Function`, `document.write` or inline scripts built from data. The only external request is the Google Fonts stylesheet, which means Google sees the viewer's IP when the page loads.
+- **No secrets and no network of its own:** there are no API keys, no backend, and no `fetch` calls. Model calls go through the artifact runtime.
+- **Local storage only:** callsign, progress and settings are stored in the browser and parsed defensively. Nothing identifying is stored.
+- **Prompt injection:** the player is the only user and the model only sees the player's own messages, so injecting the simulated target affects only that player's own run.
+- **Misuse:** the game simulates phishing and vishing against invented targets. It sends nothing, registers no domains and contains no real brands, lists or infrastructure.
+
+Found something? Open an issue on the repository.
 
 ## Project layout
 
