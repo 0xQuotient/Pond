@@ -8,6 +8,7 @@ Pond is a single-page training game in the style of Hack The Box, built around p
 
 ## Contents
 
+- [How to play](#how-to-play)
 - [Modes](#modes)
 - [Difficulty](#difficulty)
 - [Ranks](#ranks)
@@ -57,21 +58,35 @@ Clearing missions raises your rank:
 | Kraken | 38 |
 | Anglerfish | 55 |
 
+## How to play
+
+1. **Get it into Claude.** Pond needs Claude to run, so it is meant to live as a [Claude artifact](https://claude.ai). Create a new artifact, paste in the contents of `index.html`, and publish it. Details are under [Running it](#running-it).
+2. **Pick a callsign.** Your profile and progress stay in your browser.
+3. **Choose a mode, a mission and a difficulty,** then launch. The workspace opens with a goal bar, a brief, and the tools for that mode.
+4. **Work the target.** Talk (vishing), write emails (spear phishing) or build and refine a campaign (mass phishing). Capture the flag before suspicion or the clock gets you.
+5. **Read the debrief.** Review the transcript, then try a higher tier.
+
+Shortcuts: `Enter` sends a call message, `Ctrl/Cmd+Enter` sends an email or launches a campaign round, and `Esc` cancels a pending "click again to confirm".
+
 ## Running it
 
-`index.html` is one self-contained file with no build step and no dependencies. It is written as a [Claude artifact](https://claude.ai) and uses one runtime API, `window.claude.sample`, to play the targets, generate dossiers, simulate campaign results and write coach notes on the viewer's own Claude account.
+`index.html` is one self-contained file with no build step and no dependencies. Every AI feature (the targets, dossiers, simulated campaign results and coach notes) goes through `window.claude.sample`, which only exists inside a Claude artifact and runs on the **viewer's own Claude account**. That is why Pond has no backend, no API keys and no hosting cost.
 
-There is no backend and no leaderboard. Profile and progress are stored in the browser's `localStorage`.
+What that means in practice:
 
-**Inside claude.ai:** publish `index.html` as-is as an artifact and declare the `sample` capability only. The file deliberately has no `<html>`, `<head>` or `<body>` wrapper, because the artifact host adds one.
+- **Players need a Claude account.** Nothing is billed to whoever publishes the artifact.
+- **Publishing:** publish `index.html` as-is and declare the `sample` capability only. The file deliberately has no `<html>`, `<head>` or `<body>` wrapper, because the artifact host adds one.
+- **Sharing:** artifacts are private until their owner shares them. Share the artifact link from its Share menu, not this repo, so people can play it.
+- **This repo is the source.** Cloning it or opening `index.html` directly gives you the interface but no AI, and the page reports "Claude isn't available in this view".
+- **No backend means no leaderboard.** Profile and progress live in the browser's `localStorage`, so clearing site data resets them.
 
-**Anywhere else:** the page loads, but the AI features show "Claude isn't available in this view". To click through the whole interface with canned replies, build the standalone page with the dev shim:
+To click through the whole interface offline with canned replies, build the standalone page with the dev shim:
 
 ```bash
 python3 tools/build_standalone.py --mock
 ```
 
-Then open `dist/standalone.html` in a browser. Without `--mock` there is no AI backend.
+Then open `dist/standalone.html` in a browser. This is for development only. The replies are scripted, not played by a model.
 
 ## Development
 
@@ -97,9 +112,9 @@ tests/flow_test.py         Playwright flow tests
 ## Roadmap
 
 - Technical attack modes alongside the social ones, such as address poisoning, clickjacking and watering holes.
-- A warning cue before the call ends when the clock is hidden.
 - Tuning the hardest tiers against the real model.
 - Screenshots in this README.
+- Playing outside claude.ai would need either bring-your-own API key or a hosted backend. Both are deliberately out of scope for now.
 
 ## License
 
