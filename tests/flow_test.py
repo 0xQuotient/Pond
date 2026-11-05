@@ -47,6 +47,11 @@ async def run(b,tag,w,h):
     for d,exp in (("easy",(1,1,1)),("hard",(0,0,0)),("impossible",(0,0,0))):
         got=await ev("(function(){var a=DIFFICULTIES.filter(function(x){return x.id==='%s'})[0].aids;return [a.meter,a.clock,a.trail]})()"%d)
         check(tag+" aids "+d, tuple(got)==exp, got)
+    # UX: Escape clears armed confirm; hidden-clock cue
+    await ev("armed.key='end'"); await pg.keyboard.press("Escape"); check(tag+" Escape disarms confirm", await ev("armed.key")==None)
+    await ev("(function(){var d=call.diff.aids.clock; call.diff.aids.clock=0; call.seconds=31; tick(); call.diff.aids.clock=d;})()"); await pg.wait_for_timeout(100)
+    await ev("(function(){var d=call.diff.aids.clock; call.diff.aids.clock=0; call.seconds=30; call.nudged=false; tick(); call.diff.aids.clock=d; call.seconds=300;})()"); await pg.wait_for_timeout(300)
+    check(tag+" quiet cue appears once", await pg.locator("#msgs .msg.sys").count()>=2)
     # 3 hints failure not counted; success counted
     await ev("window.__fail=true"); await ev("setTool('hints')"); await ev("requestHint()"); await pg.wait_for_timeout(600)
     check(tag+" failed hint not counted", await ev("call.assisted")==False and await ev("call.hints.length")==0)

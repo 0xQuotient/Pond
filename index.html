@@ -166,7 +166,7 @@
   .subject-input:disabled{opacity:.55;}
   .composer.email textarea{min-height:72px;resize:vertical;background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:11px 13px;color:var(--ink);font-size:14px;font-family:var(--sans);transition:border-color .15s var(--ease), box-shadow .15s var(--ease);}
   .composer.email textarea:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(240,115,31,.15);}
-  .send-row{display:flex;justify-content:flex-end;margin-top:8px;}
+  .send-row{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px;}
 
   .hud-col{background:linear-gradient(180deg, var(--panel), var(--panel-2));padding:18px 16px;display:flex;flex-direction:column;gap:18px;}
   .hud-block h4{font-size:10.5px;letter-spacing:.01em;color:var(--ink-dim);margin:0 0 9px;font-weight:600;}
@@ -786,6 +786,12 @@
   .next-step b{font-size:15px;color:#F1E6CF;}
   .wk-grid.one{grid-template-columns:1fr;}
   .wk-head{margin-bottom:16px;}
+
+  /* ---- smoothness pass ---- */
+  @keyframes paneIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+  .os-work>*,.panel-body>*{animation:paneIn .16s ease-out both;}
+  .kbd-hint{font-family:var(--mono);font-size:10.5px;color:#8B7456;margin-top:6px;}
+  .dock-btn,.bl-row,.wk-go,.launch-btn{transition:background-color .14s,color .14s,border-color .14s,transform .1s;}
 </style>
 <div id="root"></div>
 <script>
@@ -1465,6 +1471,18 @@ function confirmTwice(key, msg, fn){
   }
   armed.key = null; clearTimeout(armed.t); fn();
 }
+document.addEventListener("keydown", function(e){
+  if(e.key==="Escape"){
+    armed.key = null; clearTimeout(armed.t);
+    var t = document.getElementById("toast"); if(t) t.style.display = "none";
+    return;
+  }
+  if(e.key==="Enter" && (e.ctrlKey || e.metaKey)){
+    var id = e.target && e.target.id;
+    if(id==="composer-body" || id==="composer-subject"){ e.preventDefault(); sendMsg(); }
+    else if(id==="camp-body" || id==="camp-subject"){ e.preventDefault(); syncComposeState(); launchRound(); }
+  }
+});
 function missionLive(){
   return (ui.screen==="call" && call && !call.ended) || (ui.screen==="campaign" && campaign && !campaign.ended);
 }
@@ -1968,7 +1986,7 @@ function renderCallShell(){
       '<div class="composer email">' +
         '<input id="composer-subject" class="subject-input" placeholder="Subject line…">' +
         '<textarea id="composer-body" placeholder="write the email…"></textarea>' +
-        '<div class="send-row"><button id="send-btn" onclick="sendMsg()" disabled>Send email</button></div>' +
+        '<div class="send-row"><span class="kbd-hint">Ctrl+Enter to send</span><button id="send-btn" onclick="sendMsg()" disabled>Send email</button></div>' +
       '</div>';
   } else {
     composerHtml =
@@ -2012,7 +2030,7 @@ function renderCallShell(){
         '</div>' +
         '<div class="os-main">' +
           '<div class="app-head">' + ico(call.mode.interaction==="email" ? "mail" : "phone") + (call.mode.interaction==="email" ? "Mail" : "Softphone") + '<span class="sub">' + esc(headerName) + '</span></div>' +
-          '<div class="msgs" id="msgs"><div class="msg sys">— ' + (call.mode.interaction==="email" ? "inbox empty. Write the first email below." : "call connected") + ' —</div></div>' +
+          '<div class="msgs" id="msgs" role="log" aria-live="polite"><div class="msg sys">— ' + (call.mode.interaction==="email" ? "inbox empty. Write the first email below." : "call connected") + ' —</div></div>' +
           composerHtml +
         '</div>' +
         '</div>' +
@@ -2192,6 +2210,11 @@ function addMsg(role, text){
   var msgs = document.getElementById("msgs");
   if(!msgs) return;
   var div = document.createElement("div");
+  if(role==="sys"){
+    div.className = "msg sys"; div.textContent = "\u2014 " + text + " \u2014";
+    msgs.appendChild(div); msgs.scrollTo({top: msgs.scrollHeight, behavior:"smooth"});
+    return;
+  }
   if(call && call.mode.interaction==="email"){
     var other = call.caseObj.targetName || "Target";
     var subj = call.subjectLine || "";
@@ -2302,6 +2325,10 @@ function tick(){
     }
     return;
   }
+  if(!call.diff.aids.clock && !call.nudged && call.seconds<=30 && call.stage!=="recon"){
+    call.nudged = true;
+    addMsg("sys", call.mode.interaction==="email" ? "the thread is going quiet" : "they sound like they are about to hang up");
+  }
   updateTimerUI();
 }
 
@@ -2330,7 +2357,7 @@ async function sendMsg(){
 
   if(call.mode.interaction==="email" && isFirst){
     var subj = els.subject ? els.subject.value.trim() : "";
-    if(!subj){ if(els.subject) els.subject.focus(); return; }
+    if(!subj){ toast("Add a subject line first."); if(els.subject) els.subject.focus(); return; }
     call.subjectLine = subj;
     outgoing = "Subject: " + subj + "\n\n" + bodyText;
     displayText = outgoing;
