@@ -792,6 +792,13 @@
   .os-work>*,.panel-body>*{animation:paneIn .16s ease-out both;}
   .kbd-hint{font-family:var(--mono);font-size:10.5px;color:#8B7456;margin-top:6px;}
   .dock-btn,.bl-row,.wk-go,.launch-btn{transition:background-color .14s,color .14s,border-color .14s,transform .1s;}
+  .hero{position:relative;}
+  @media (max-width:700px){.hero{overflow:hidden;}}
+  .lb-back{padding:10px 0;}
+  .home-mode:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .site-nav a:focus-visible,.site-logo:focus-visible,.site-user:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .end-actions .again-btn:last-child{grid-column:1/-1;}
+  .end-status{font-size:15px;letter-spacing:.02em;}
 </style>
 <div id="root"></div>
 <script>
@@ -1211,13 +1218,13 @@ function goProfile(){ ui.screen="profile"; renderProfile(); }
 
 function siteChrome(active, inner){
   var nav=[["home","Home","goHome()"],["missions","Missions","startPlaying()"],["profile","Profile","goProfile()"],["help","How to play","showTutorial()"]];
-  var navHtml=nav.map(function(n){ return '<a class="'+(active===n[0]?"here":"")+'" onclick="'+n[2]+'">'+esc(n[1])+'</a>'; }).join("");
+  var navHtml=nav.map(function(n){ return '<a class="'+(active===n[0]?"here":"")+'" tabindex="0" role="link"'+(active===n[0]?' aria-current="page"':'')+' onclick="'+n[2]+'" onkeydown="onKeyPick(event,function(){'+n[2]+'})">'+esc(n[1])+'</a>'; }).join("");
   return '<div class="site">' +
     '<div class="site-header">' +
-      '<div class="site-logo" onclick="goHome()" style="cursor:pointer">Pond</div>' +
+      '<div class="site-logo" tabindex="0" role="link" onclick="goHome()" onkeydown="onKeyPick(event,goHome)" style="cursor:pointer">Pond</div>' +
       '<div class="site-nav">'+navHtml+'</div>' +
       '<div class="site-spacer"></div>' +
-      '<div class="site-user" onclick="goProfile()" style="cursor:pointer"><span>'+esc(profileName||"operator")+'</span><div class="av">'+esc((profileName||"O").charAt(0).toUpperCase())+'</div></div>' +
+      '<div class="site-user" tabindex="0" role="link" aria-label="Profile" onclick="goProfile()" onkeydown="onKeyPick(event,goProfile)" style="cursor:pointer"><span>'+esc(profileName||"operator")+'</span><div class="av">'+esc((profileName||"O").charAt(0).toUpperCase())+'</div></div>' +
     '</div>' + inner + '</div>';
 }
 
@@ -1228,7 +1235,7 @@ function renderHome(){
   var modeCards=MODES.map(function(m){
     var st=clearedInMode(m.id);
     var icon = ico(m.id==="vishing"?"phone":m.id==="phishing"?"mail":"mass");
-    return '<div class="home-mode" onclick="jumpMode(\''+m.id+'\')">'+
+    return '<div class="home-mode" tabindex="0" role="button" onclick="jumpMode(\''+m.id+'\')" onkeydown="onKeyPick(event,function(){jumpMode(\''+m.id+'\')})">'+
       '<div class="hm-ic">'+icon+'</div>'+
       '<div class="hm-body"><h3>'+esc(m.name)+'<span class="gear">'+esc(m.gear||"")+'</span></h3><p>'+esc(m.tag)+'</p>'+
       '<div class="hm-bar"><div class="hm-fill" style="width:'+(st.done/st.total*100)+'%"></div></div>'+
@@ -1511,14 +1518,14 @@ function vmStatus(right){
 function siteShell(crumbLabel, consoleHtml){
   var nav = [["goHome","Home"],["startPlaying","Missions"],["goProfile","Profile"],["showTutorial","How to play"]];
   var navHtml = nav.map(function(n){
-    return '<a class="'+(n[0]==="startPlaying"?"here":"")+'" onclick="navAway(\''+n[0]+'\')">'+esc(n[1])+'</a>';
+    return '<a class="'+(n[0]==="startPlaying"?"here":"")+'" tabindex="0" role="link" onclick="navAway(\''+n[0]+'\')" onkeydown="onKeyPick(event,function(){navAway(\''+n[0]+'\')})">'+esc(n[1])+'</a>';
   }).join("");
   return '<div class="site in-mission">' +
     '<div class="site-header">' +
-      '<div class="site-logo" onclick="navAway(\'goHome\')" style="cursor:pointer">Pond</div>' +
+      '<div class="site-logo" tabindex="0" role="link" onclick="navAway(\'goHome\')" onkeydown="onKeyPick(event,function(){navAway(\'goHome\')})" style="cursor:pointer">Pond</div>' +
       '<div class="site-nav">'+navHtml+'</div>' +
       '<div class="site-spacer"></div>' +
-      '<div class="site-user" onclick="navAway(\'goProfile\')" style="cursor:pointer"><span>'+esc(profileName||"operator")+'</span><div class="av">'+esc((profileName||"O").charAt(0).toUpperCase())+'</div></div>' +
+      '<div class="site-user" tabindex="0" role="link" aria-label="Profile" onclick="navAway(\'goProfile\')" onkeydown="onKeyPick(event,function(){navAway(\'goProfile\')})" style="cursor:pointer"><span>'+esc(profileName||"operator")+'</span><div class="av">'+esc((profileName||"O").charAt(0).toUpperCase())+'</div></div>' +
     '</div>' +
     '<div class="site-stage">' +
       '<div class="site-crumb"><b>Pond</b><span class="sep">/</span>'+esc(crumbLabel)+'</div>' +

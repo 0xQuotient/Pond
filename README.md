@@ -16,6 +16,7 @@ Pond is a single-page training game in the style of Hack The Box, built around p
 - [Ranks](#ranks)
 - [Running it](#running-it)
 - [Development](#development)
+- [Accessibility](#accessibility)
 - [Security notes](#security-notes)
 - [Project layout](#project-layout)
 - [Roadmap](#roadmap)
@@ -113,6 +114,10 @@ python3 tests/flow_test.py
 ```
 
 The suite prints `ALL OK` when everything passes.
+
+## Accessibility
+
+The navigation, mode cards, mission tabs and forms are reachable by keyboard with visible focus rings, new call messages are announced to screen readers, and animations switch off for people who prefer reduced motion. The layout is checked at phone width for sideways scrolling.
 
 ## Security notes
 
