@@ -150,4 +150,4 @@ tests/flow_test.py         Playwright flow tests
 
 ## License
 
-None chosen yet, so all rights are reserved by default.
+[MIT](LICENSE) © 2026 Derrick Last Jr.
